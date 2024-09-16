@@ -6,19 +6,30 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "esfix": "eslint --fix ."
   },
   "dependencies": {
+    "@madebywild/prettier-config": "^0.1.0",
+    "@styled/typescript-styled-plugin": "^1.0.1",
+    "next": "14.2.11",
+    "prettier": "^3.3.3",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.11"
+    "styled-components": "^6.1.13"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@madebywild/eslint-config": "^0.5.15",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.2.11"
-  }
+    "eslint-config-next": "14.2.11",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-jsx-a11y": "^6.10.0",
+    "eslint-plugin-react": "^7.36.1",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "typescript": "^5"
+  },
+  "prettier": "@madebywild/prettier-config"
 }

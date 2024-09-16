@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { ThemeWrapper } from "@/components/ThemeWrapper";
+import { Cursor } from "@/components/Cursor";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+const tungstenBold = localFont({
+  src: "./fonts/Tungsten-Bold.woff",
+  variable: "--tungsten-bold",
+  weight: "700",
 });
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+
+const tungstenSemiBold = localFont({
+  src: "./fonts/Tungsten-Semibold.woff",
+  variable: "--tungsten-semi-bold",
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -25,8 +28,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+      <body className={`${tungstenBold.className} ${tungstenSemiBold.className}`}>
+        <ThemeWrapper>{children}</ThemeWrapper>
+        <Cursor />
       </body>
     </html>
   );
