@@ -10,8 +10,11 @@
     "esfix": "eslint --fix ."
   },
   "dependencies": {
+    "@gsap/react": "^2.1.1",
     "@madebywild/prettier-config": "^0.1.0",
     "@styled/typescript-styled-plugin": "^1.0.1",
+    "ahooks": "^3.8.1",
+    "gsap": "^3.12.5",
     "next": "14.2.11",
     "prettier": "^3.3.3",
     "react": "^18",
