@@ -6,7 +6,11 @@ type CursorWrapperProps = {
   $y: number | null;
 };
 
-export const CursorWrapper = styled.div<CursorWrapperProps>`
+export const CursorWrapper = styled.div.attrs<CursorWrapperProps>((props) => ({
+  style: {
+    transform: `translate(calc(${props.$x}px - 1.25rem), calc(${props.$y}px - 1.25rem))`,
+  },
+}))`
   position: fixed;
   top: 0;
   left: 0;
@@ -14,7 +18,6 @@ export const CursorWrapper = styled.div<CursorWrapperProps>`
   height: 2.5rem;
   pointer-events: none;
   will-change: transform;
-  transform: translate(calc(${(p) => p.$x}px - 1.25rem), calc(${(p) => p.$y}px - 1.25rem));
 `;
 
 export const CursorInnerWrapper = styled.div`

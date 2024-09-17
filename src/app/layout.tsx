@@ -29,8 +29,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${tungstenBold.className} ${tungstenSemiBold.className}`}>
-        <ThemeWrapper>{children}</ThemeWrapper>
-        <Cursor />
+        <ThemeWrapper>
+          {children}
+          <Cursor />
+        </ThemeWrapper>
       </body>
     </html>
   );

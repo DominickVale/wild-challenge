@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import useMousePosition from "@/lib/hooks/useMousePosition";
+import { useMouse } from "ahooks";
 import { CursorWrapper, CursorInner, CursorInnerWrapper, CursorProgress } from "./Cursor.styles";
 
 export const Cursor = () => {
-  const { x, y } = useMousePosition();
+  const { clientX, clientY } = useMouse();
   const progressRef = useRef<SVGCircleElement>(null);
   const progress = 50;
 
@@ -18,7 +18,7 @@ export const Cursor = () => {
   }, [progress]);
 
   return (
-    <CursorWrapper $x={x} $y={y}>
+    <CursorWrapper $x={clientX} $y={clientY}>
       <CursorInnerWrapper>
         <CursorProgress width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle
