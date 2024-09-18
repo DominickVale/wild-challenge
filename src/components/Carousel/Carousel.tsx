@@ -1,24 +1,35 @@
 "use client";
 
-import { ScrollControllerState } from "@/app/page.hooks";
-import { BGImages, BGImagesWrapper, BlurredImage, SliderImage, SliderImagesWrapper } from "@/app/page.styles";
 import { useGSAP } from "@gsap/react";
 import { useSize } from "ahooks";
 import gsap from "gsap";
 import Image from "next/image";
-import React, { useRef, useState } from "react";
-import { useCarouselPositions } from "./Carousel.hooks";
+import { useState } from "react";
 import { isFirstOrLast } from "@/lib/utils/array";
+import { Flex } from "../Flex";
+import { ProgressBar, ProgressBarDot } from "../ProgressBar";
+import { CTA, HeroType, P } from "../Typography";
+import { useCarouselPositions, useScrollController } from "./Carousel.hooks";
+import {
+  BGImages,
+  BGImagesWrapper,
+  BlurredImage,
+  Container,
+  CTASection,
+  SliderImage,
+  SliderImagesWrapper,
+  TitleSection,
+} from "./Carousel.styles";
 
 type Props = {
   images: Array<{ id: number; url: string; alt: string }>;
   /* the size of the small images */
   imageSize: { width: number; height: number };
-  scrollState: ScrollControllerState;
 };
 
 export const Carousel = (props: Props) => {
-  const { images, imageSize, scrollState } = props;
+  const { images, imageSize } = props;
+  const scrollState = useScrollController(images);
   const pageDimensions = useSize(document.documentElement);
   const [activeImageId, setActiveImageId] = useState(0);
 
@@ -102,19 +113,47 @@ export const Carousel = (props: Props) => {
   }, [activeImageId]);
 
   return (
-    <BGImagesWrapper>
-      <BGImages id="slider-bg__wrapper">
-        {images.map(({ id, url }) => (
-          <BlurredImage key={id} src={url} data-img-id={id} fill alt="Background image" />
-        ))}
-      </BGImages>
-      <SliderImagesWrapper id="slider-images__wrapper">
-        {images.map(({ id, url, alt }) => (
-          <SliderImage key={id} data-idx={id} data-img-id={id}>
-            <Image src={url} fill alt={alt} />
-          </SliderImage>
-        ))}
-      </SliderImagesWrapper>
-    </BGImagesWrapper>
+    <Container id="carousel">
+      <BGImagesWrapper>
+        <BGImages id="slider-bg__wrapper">
+          {images.map(({ id, url }) => (
+            <BlurredImage key={id} src={url} data-img-id={id} fill alt="Background image" />
+          ))}
+        </BGImages>
+        <SliderImagesWrapper id="slider-images__wrapper">
+          {images.map(({ id, url, alt }) => (
+            <SliderImage key={id} data-idx={id} data-img-id={id}>
+              <Image src={url} fill alt={alt} />
+            </SliderImage>
+          ))}
+        </SliderImagesWrapper>
+      </BGImagesWrapper>
+      <TitleSection>
+        <HeroType>
+          EVERYDAY
+          <br />
+          FLOWERS
+        </HeroType>
+        <Flex direction="row" gap="1.5rem">
+          <P>1 of 5</P>
+          <ProgressBar>
+            <ProgressBarDot $isActive />
+            <ProgressBarDot />
+            <ProgressBarDot />
+            <ProgressBarDot />
+            <ProgressBarDot />
+          </ProgressBar>
+        </Flex>
+        <CTASection>
+          <P>
+            JOHANNA HOBEL
+            <br />
+            FOR WILD
+          </P>
+          <P>DEC 2019</P>
+          <CTA href="/">HAVE A LOOK</CTA>
+        </CTASection>
+      </TitleSection>
+    </Container>
   );
 };
