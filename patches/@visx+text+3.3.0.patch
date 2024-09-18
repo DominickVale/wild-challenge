@@ -1,0 +1,38 @@
+diff --git a/node_modules/@visx/text/esm/Text.js b/node_modules/@visx/text/esm/Text.js
+index c6736cf..6aee3d6 100644
+--- a/node_modules/@visx/text/esm/Text.js
++++ b/node_modules/@visx/text/esm/Text.js
+@@ -31,13 +31,7 @@ export default function Text(props) {
+     wordsByLines = _useText.wordsByLines,
+     startDy = _useText.startDy,
+     transform = _useText.transform;
+-  return /*#__PURE__*/React.createElement("svg", {
+-    ref: innerRef,
+-    x: dx,
+-    y: dy,
+-    fontSize: fontSize,
+-    style: SVG_STYLE
+-  }, wordsByLines.length > 0 ? /*#__PURE__*/React.createElement("text", _extends({
++  return /*#__PURE__*/React.createElement(React.Fragment, null, wordsByLines.length > 0 ? /*#__PURE__*/React.createElement("text", _extends({
+     ref: innerTextRef,
+     transform: transform
+   }, textProps, {
+diff --git a/node_modules/@visx/text/lib/Text.js b/node_modules/@visx/text/lib/Text.js
+index 899e867..f4a51cd 100644
+--- a/node_modules/@visx/text/lib/Text.js
++++ b/node_modules/@visx/text/lib/Text.js
+@@ -36,13 +36,7 @@ function Text(props) {
+     wordsByLines = _useText.wordsByLines,
+     startDy = _useText.startDy,
+     transform = _useText.transform;
+-  return /*#__PURE__*/_react.default.createElement("svg", {
+-    ref: innerRef,
+-    x: dx,
+-    y: dy,
+-    fontSize: fontSize,
+-    style: SVG_STYLE
+-  }, wordsByLines.length > 0 ? /*#__PURE__*/_react.default.createElement("text", _extends({
++  return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, wordsByLines.length > 0 ? /*#__PURE__*/_react.default.createElement("text", _extends({
+     ref: innerTextRef,
+     transform: transform
+   }, textProps, {
