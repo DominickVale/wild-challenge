@@ -1,10 +1,12 @@
 "use client";
 import Image from "next/image";
 import gsap from "gsap";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSize } from "ahooks";
 import { Container } from "@/components/Container";
 import { NavLogo } from "@/components/NavLogo";
 import { CTA, HeroType, P } from "@/components/Typography";
+import { Vec2 } from "@/types";
 import { Flex } from "../components/Flex";
 import { ProgressBar, ProgressBarDot } from "../components/ProgressBar";
 import { useScrollController } from "./page.hooks";
@@ -33,18 +35,15 @@ const imageSize = {
 };
 
 export default function Home() {
-  const state = useScrollController(images);
+  const scrollState = useScrollController(images);
+  const pageDimensions = useSize(document.documentElement);
+
   const canChange = useRef(true);
 
   useEffect(() => {
-    if (!canChange.current) {
+    if (!canChange.current || !pageDimensions) {
       return;
     }
-    const pageDimensions = {
-      width: document.documentElement.clientWidth,
-      height: document.documentElement.clientHeight,
-    };
-
     const origin = {
       x: pageDimensions.width / 2,
       y: pageDimensions.height / 2,
@@ -55,25 +54,13 @@ export default function Home() {
       y: origin.y - imageSize.height / 2 - 16,
     };
 
-    const positions = [
-      {
-        x: origin.x - 2 * pattern.x,
-        y: origin.y + 2 * pattern.y,
-      },
-      {
-        x: origin.x - pattern.x,
-        y: origin.y + pattern.y,
-      },
-      origin,
-      {
-        x: origin.x + pattern.x,
-        y: origin.y - pattern.y,
-      },
-      {
-        x: origin.x + 2 * pattern.x,
-        y: origin.y - 2 * pattern.y,
-      },
-    ];
+    const positions = images.map((_, idx) => {
+      const offset = idx - Math.floor(images.length / 2);
+      return {
+        x: origin.x + offset * pattern.x,
+        y: origin.y - offset * pattern.y,
+      };
+    });
     const isOutside = (i: number) => i === 0 || i === positions.length - 1;
 
     const tl = gsap.timeline({
@@ -89,7 +76,7 @@ export default function Home() {
       const oldIdx = Number(el.getAttribute("data-idx"));
       let newIdx = oldIdx;
 
-      if (state.direction === "down") {
+      if (scrollState.direction === "down") {
         newIdx = (newIdx - 1 + images.length) % images.length;
       } else {
         newIdx = (newIdx + 1) % images.length;
@@ -118,10 +105,9 @@ export default function Home() {
           "<"
         );
       }
-
       el.setAttribute("data-idx", newIdx.toString());
     });
-  }, [state.activeIdx, state.direction]);
+  }, [scrollState.activeIdx, scrollState.direction, pageDimensions]);
 
   return (
     <Container>
@@ -129,7 +115,7 @@ export default function Home() {
       <BGImagesWrapper>
         <BGImages>
           {images.map(({ id, url }) => (
-            <BlurredImage key={id} src={url} $isActive={id === state.activeIdx} fill alt="Background image" />
+            <BlurredImage key={id} src={url} fill alt="Background image" />
           ))}
         </BGImages>
         <SliderImagesWrapper id="slider-images__wrapper">
@@ -174,80 +160,3 @@ export default function Home() {
     </Container>
   );
 }
-
-// const state = useScrollController(images);
-// const firstRender = useRef(true);
-//
-// const initImages = useCallback((arr: number[]) => {
-//   const pageDimensions = {
-//     width: document.documentElement.clientWidth,
-//     height: document.documentElement.clientHeight,
-//   };
-//   let addX = 0;
-//   arr.forEach((imgId, idx) => {
-//     const el = gsap.utils.toArray<HTMLElement>(
-//       `#slider-images__wrapper > :nth-child(${imgId + 1})`
-//     )[0] as HTMLElement;
-//     const bbox = el.getBoundingClientRect();
-//     if (addX === 0) {
-//       addX += bbox.width / 2 + 16;
-//     }
-//
-//     gsap.set(el, {
-//       left: addX,
-//     });
-//     const toChange = pageDimensions.width / 2 - bbox.width / 2 - 16; // displace (mind the page padding)
-//     addX += toChange;
-//   });
-//   firstRender.current = false;
-// }, []);
-//
-// useEffect(() => {
-//   let left = (state.activeIdx - 1) % images.length;
-//   left = left < 0 ? 4 : left;
-//   const right = (state.activeIdx + 1) % images.length;
-//
-//   const pageDimensions = {
-//     width: document.documentElement.clientWidth,
-//     height: document.documentElement.clientHeight,
-//   };
-//
-//   if (firstRender.current) {
-//     initImages([left, state.activeIdx, right]);
-//   } else {
-//     const el = gsap.utils.toArray<HTMLElement>("#slider-images__wrapper > *").forEach((el, idx) => {
-//       const bbox = el.getBoundingClientRect();
-//
-//       let newLeft = bbox.x + bbox.width / 2; // base pos
-//
-//       if (newLeft - bbox.width / 2 < 0) {
-//         newLeft = pageDimensions.width + Math.abs(newLeft);
-//         gsap.set(el, {
-//           left: newLeft,
-//         });
-//       }
-//
-//       const toChange = pageDimensions.width / 2 - bbox.width / 2 - 16; // displace (mind the page padding)
-//       if (state.direction === "up") {
-//         newLeft = newLeft + toChange;
-//       } else {
-//         newLeft = newLeft - toChange;
-//       }
-//       console.log(newLeft);
-//
-//       gsap.set(".debug", {
-//         height: 10,
-//         width: 10,
-//         backgroundColor: "red",
-//         position: "fixed",
-//         left: newLeft,
-//       });
-//       gsap.to(el, {
-//         left: newLeft,
-//         duration: 1,
-//         ease: "power4.inOut",
-//       });
-//     });
-//   }
-// }, [initImages, state.activeIdx, state.direction]);
-//
