@@ -1,11 +1,12 @@
 "use client";
 
 import { useSize } from "ahooks";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BGImagesWrapper, BGImages, BlurredImage, SliderImagesWrapper, SliderImage } from "@/app/page.styles";
 import { ScrollControllerState } from "@/app/page.hooks";
 import Image from "next/image";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 type Props = {
   images: Array<{ id: number; url: string; alt: string }>;
@@ -18,10 +19,10 @@ export const Carousel = (props: Props) => {
   const { images, imageSize, scrollState } = props;
   const pageDimensions = useSize(document.documentElement);
 
-  const canChange = useRef(true);
+  const [canChange, setCanChange] = useState(true);
 
-  useEffect(() => {
-    if (!canChange.current || !pageDimensions) {
+  useGSAP(() => {
+    if (!canChange || !pageDimensions) {
       return;
     }
     const origin = {
@@ -45,16 +46,16 @@ export const Carousel = (props: Props) => {
 
     const tl = gsap.timeline({
       onStart: () => {
-        canChange.current = false;
+        setCanChange(false);
       },
       onComplete: () => {
-        canChange.current = true;
+        setCanChange(true);
       },
     });
 
     gsap.utils.toArray<HTMLElement>("#slider-images__wrapper > *").forEach((el, idx) => {
       const oldIdx = Number(el.getAttribute("data-idx"));
-      let newIdx = oldIdx;
+      let newIdx = oldIdx || 0;
 
       if (scrollState.direction === "down") {
         newIdx = (newIdx - 1 + images.length) % images.length;
@@ -62,6 +63,7 @@ export const Carousel = (props: Props) => {
         newIdx = (newIdx + 1) % images.length;
       }
 
+      console.log("old", oldIdx, "new", newIdx, idx);
       const newPosition = positions[newIdx];
       // check if the image is being placed from an outside edge to another (0, to last)
       if (isOutside(oldIdx) && isOutside(newIdx)) {
