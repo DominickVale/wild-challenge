@@ -6,9 +6,10 @@ import gsap from "gsap";
 import Image from "next/image";
 import { useState } from "react";
 import { isFirstOrLast } from "@/lib/utils/array";
+import { images, imageSize } from "@/lib/constants";
 import { Flex } from "../Flex";
 import { ProgressBar, ProgressBarDot } from "../ProgressBar";
-import { CTA, HeroType, P } from "../Typography";
+import { CTA, P } from "../Typography";
 import { useCarouselPositions, useScrollController } from "./Carousel.hooks";
 import {
   BGImages,
@@ -20,22 +21,19 @@ import {
   SliderImagesWrapper,
   TitleSection,
 } from "./Carousel.styles";
+import { CarouselTitle } from "./CarouselTitle";
+import { CarouselProgress } from "./CarouselProgress";
 
-type Props = {
-  images: Array<{ id: number; url: string; alt: string }>;
-  /* the size of the small images */
-  imageSize: { width: number; height: number };
-};
-
-export const Carousel = (props: Props) => {
-  const { images, imageSize } = props;
+export const Carousel = () => {
   const scrollState = useScrollController(images);
-  const pageDimensions = useSize(document.documentElement);
+  const pageDimensions = useSize(typeof window !== "undefined" ? document.documentElement : null);
   const [activeImageId, setActiveImageId] = useState(0);
 
   const [canChange, setCanChange] = useState(true);
+  const [text, setText] = useState("");
   const { positions, origin } = useCarouselPositions(pageDimensions, images, imageSize);
 
+  // Main carousel animation (diagonal slide)
   useGSAP(() => {
     if (!canChange || !pageDimensions || positions.length < 5) {
       return;
@@ -60,14 +58,24 @@ export const Carousel = (props: Props) => {
         newIdx = (newIdx + 1) % images.length;
       }
 
-      console.log("old", oldIdx, "new", newIdx, idx);
       const newPosition = positions[newIdx];
       const isCenter = newPosition.x === origin.x;
+      const scaledImageSize = {
+        width: isCenter ? imageSize.width * 2.05 : imageSize.width,
+        height: isCenter ? imageSize.height * 2.05 : imageSize.height,
+      };
+      const maskRectangle = document.querySelector(`#carousel__title .carousel__svg-mask-rect:nth-child(${idx + 2})`);
       // check if the image is being placed from an outside edge to another (0, to last)
       if (isFirstOrLast(oldIdx, images) && isFirstOrLast(newIdx, images)) {
         gsap.set(el as HTMLElement, {
           left: newPosition.x,
           top: newPosition.y,
+        });
+        gsap.set(maskRectangle as SVGRectElement, {
+          attr: {
+            x: newPosition.x - imageSize.width / 2,
+            y: newPosition.y - imageSize.height / 2,
+          },
         });
       } else {
         tl.to(
@@ -77,9 +85,22 @@ export const Carousel = (props: Props) => {
             top: newPosition.y,
             // we are animating height & width because transform: scale
             // affects borders and makes life more complicated. TL;DR worth the compromise
+            height: scaledImageSize.height,
+            width: scaledImageSize.width,
+            duration: 1.5,
+            ease: "power4.inOut",
+          },
+          "<"
+        ).to(
+          maskRectangle as SVGRectElement,
+          {
+            attr: {
+              x: newPosition.x - scaledImageSize.width / 2 - 16,
+              y: newPosition.y - scaledImageSize.height / 2 - 16,
+            },
             height: isCenter ? imageSize.height * 2.05 : imageSize.height,
             width: isCenter ? imageSize.width * 2.05 : imageSize.width,
-            duration: 0.6,
+            duration: 1.5,
             ease: "power4.inOut",
           },
           "<"
@@ -93,6 +114,7 @@ export const Carousel = (props: Props) => {
     });
   }, [scrollState.activeIdx, scrollState.direction, pageDimensions]);
 
+  // Background (blurred) images animations
   useGSAP(() => {
     const tl = gsap
       .timeline()
@@ -112,6 +134,11 @@ export const Carousel = (props: Props) => {
       );
   }, [activeImageId]);
 
+  //Title & mask animations
+  useGSAP(() => {
+    setText(images[activeImageId].title);
+  }, [activeImageId]);
+
   return (
     <Container id="carousel">
       <BGImagesWrapper>
@@ -129,21 +156,13 @@ export const Carousel = (props: Props) => {
         </SliderImagesWrapper>
       </BGImagesWrapper>
       <TitleSection>
-        <HeroType>
-          EVERYDAY
-          <br />
-          FLOWERS
-        </HeroType>
-        <Flex direction="row" gap="1.5rem">
-          <P>1 of 5</P>
-          <ProgressBar>
-            <ProgressBarDot $isActive />
-            <ProgressBarDot />
-            <ProgressBarDot />
-            <ProgressBarDot />
-            <ProgressBarDot />
-          </ProgressBar>
-        </Flex>
+        <CarouselTitle text={text} />
+        <CarouselProgress />
+        {/* <CarouselTitle> */}
+        {/*   EVERYDAY */}
+        {/*   <br /> */}
+        {/*   FLOWERS */}
+        {/* </CarouselTitle> */}
         <CTASection>
           <P>
             JOHANNA HOBEL

@@ -1,20 +1,8 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeWrapper } from "@/components/ThemeWrapper";
 import { Cursor } from "@/components/Cursor";
-
-const tungstenBold = localFont({
-  src: "./fonts/Tungsten-Bold.woff",
-  variable: "--tungsten-bold",
-  weight: "700",
-});
-
-const tungstenSemiBold = localFont({
-  src: "./fonts/Tungsten-Semibold.woff",
-  variable: "--tungsten-semi-bold",
-  weight: "400",
-});
+import { tungstenBold, tungstenSemiBold } from "./fonts";
 
 export const metadata: Metadata = {
   title: "Create Next App",
