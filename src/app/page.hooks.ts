@@ -1,7 +1,12 @@
 import { useDebounceFn } from "ahooks";
 import { useState, useEffect } from "react";
 
-export function useScrollController(items: any[]) {
+export type ScrollControllerState = {
+  activeIdx: number;
+  direction: "up" | "down";
+};
+
+export function useScrollController(items: any[]): ScrollControllerState {
   const [state, setState] = useState<{ lastTouchY: number; currIdx: number; lastDirection: "down" | "up" }>({
     lastTouchY: 0,
     currIdx: 2,
