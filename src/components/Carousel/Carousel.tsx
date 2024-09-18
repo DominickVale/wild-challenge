@@ -1,12 +1,14 @@
 "use client";
 
-import { useSize } from "ahooks";
-import { useEffect, useRef, useState } from "react";
-import { BGImagesWrapper, BGImages, BlurredImage, SliderImagesWrapper, SliderImage } from "@/app/page.styles";
 import { ScrollControllerState } from "@/app/page.hooks";
-import Image from "next/image";
-import gsap from "gsap";
+import { BGImages, BGImagesWrapper, BlurredImage, SliderImage, SliderImagesWrapper } from "@/app/page.styles";
 import { useGSAP } from "@gsap/react";
+import { useSize } from "ahooks";
+import gsap from "gsap";
+import Image from "next/image";
+import React, { useRef, useState } from "react";
+import { useCarouselPositions } from "./Carousel.hooks";
+import { isFirstOrLast } from "@/lib/utils/array";
 
 type Props = {
   images: Array<{ id: number; url: string; alt: string }>;
@@ -18,31 +20,15 @@ type Props = {
 export const Carousel = (props: Props) => {
   const { images, imageSize, scrollState } = props;
   const pageDimensions = useSize(document.documentElement);
+  const [activeImageId, setActiveImageId] = useState(0);
 
   const [canChange, setCanChange] = useState(true);
+  const { positions, origin } = useCarouselPositions(pageDimensions, images, imageSize);
 
   useGSAP(() => {
-    if (!canChange || !pageDimensions) {
+    if (!canChange || !pageDimensions || positions.length < 5) {
       return;
     }
-    const origin = {
-      x: pageDimensions.width / 2,
-      y: pageDimensions.height / 2,
-    };
-
-    const pattern = {
-      x: origin.x - imageSize.width / 2 - 16,
-      y: origin.y - imageSize.height / 2 - 16,
-    };
-
-    const positions = images.map((_, idx) => {
-      const offset = idx - Math.floor(images.length / 2);
-      return {
-        x: origin.x + offset * pattern.x,
-        y: origin.y - offset * pattern.y,
-      };
-    });
-    const isOutside = (i: number) => i === 0 || i === positions.length - 1;
 
     const tl = gsap.timeline({
       onStart: () => {
@@ -65,8 +51,9 @@ export const Carousel = (props: Props) => {
 
       console.log("old", oldIdx, "new", newIdx, idx);
       const newPosition = positions[newIdx];
+      const isCenter = newPosition.x === origin.x;
       // check if the image is being placed from an outside edge to another (0, to last)
-      if (isOutside(oldIdx) && isOutside(newIdx)) {
+      if (isFirstOrLast(oldIdx, images) && isFirstOrLast(newIdx, images)) {
         gsap.set(el as HTMLElement, {
           left: newPosition.x,
           top: newPosition.y,
@@ -79,8 +66,8 @@ export const Carousel = (props: Props) => {
             top: newPosition.y,
             // we are animating height & width because transform: scale
             // affects borders and makes life more complicated. TL;DR worth the compromise
-            height: newPosition.x === origin.x ? imageSize.height * 2.05 : imageSize.height,
-            width: newPosition.x === origin.x ? imageSize.width * 2.05 : imageSize.width,
+            height: isCenter ? imageSize.height * 2.05 : imageSize.height,
+            width: isCenter ? imageSize.width * 2.05 : imageSize.width,
             duration: 0.6,
             ease: "power4.inOut",
           },
@@ -88,19 +75,42 @@ export const Carousel = (props: Props) => {
         );
       }
       el.setAttribute("data-idx", newIdx.toString());
+      if (isCenter) {
+        const imgId = el.getAttribute("data-img-id");
+        setActiveImageId(Number(imgId));
+      }
     });
   }, [scrollState.activeIdx, scrollState.direction, pageDimensions]);
 
+  useGSAP(() => {
+    const tl = gsap
+      .timeline()
+      .to("#slider-bg__wrapper > *", {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power4.inOut",
+      })
+      .to(
+        `#slider-bg__wrapper > *:nth-child(${activeImageId + 1})`,
+        {
+          opacity: 1,
+          duration: 0.5,
+          ease: "power4.inOut",
+        },
+        "<"
+      );
+  }, [activeImageId]);
+
   return (
     <BGImagesWrapper>
-      <BGImages>
+      <BGImages id="slider-bg__wrapper">
         {images.map(({ id, url }) => (
-          <BlurredImage key={id} src={url} fill alt="Background image" />
+          <BlurredImage key={id} src={url} data-img-id={id} fill alt="Background image" />
         ))}
       </BGImages>
       <SliderImagesWrapper id="slider-images__wrapper">
         {images.map(({ id, url, alt }) => (
-          <SliderImage key={id} data-idx={id}>
+          <SliderImage key={id} data-idx={id} data-img-id={id}>
             <Image src={url} fill alt={alt} />
           </SliderImage>
         ))}

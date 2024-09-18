@@ -48,7 +48,7 @@ export const BGImages = styled.div`
   position: relative;
   height: 100%;
   width: 100%;
-  background-color: fuchsia;
+  background-color: black;
   &::after {
     content: "";
     position: absolute;
@@ -62,13 +62,8 @@ export const BGImages = styled.div`
   }
 `;
 
-type BlurredImageProps = {
-  $isActive?: boolean;
-} & ImageProps;
-
-export const BlurredImage = styled(Image)<BlurredImageProps>`
+export const BlurredImage = styled(Image)`
   object-fit: cover;
-  opacity: ${(p) => (p.$isActive ? 1 : 0)};
 `;
 
 export const SliderImage = styled.div`
