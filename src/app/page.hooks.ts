@@ -6,7 +6,7 @@ export type ScrollControllerState = {
   direction: "up" | "down";
 };
 
-export function useScrollController(items: any[]): ScrollControllerState {
+export function useScrollController(items: unknown[]): ScrollControllerState {
   const [state, setState] = useState<{ lastTouchY: number; currIdx: number; lastDirection: "down" | "up" }>({
     lastTouchY: 0,
     currIdx: 2,
