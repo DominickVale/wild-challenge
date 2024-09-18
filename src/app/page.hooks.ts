@@ -34,7 +34,7 @@ export function useScrollController(items: any[]) {
 
       setState((prevState) => ({ ...prevState, currIdx: newIdx, lastDirection: direction }));
     },
-    { wait: 300, leading: true, trailing: false }
+    { wait: 50, leading: true, trailing: false }
   );
 
   useEffect(() => {

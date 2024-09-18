@@ -1,8 +1,7 @@
 "use client";
 import Image from "next/image";
-import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Container } from "@/components/Container";
 import { NavLogo } from "@/components/NavLogo";
 import { CTA, HeroType, P } from "@/components/Typography";
@@ -35,9 +34,12 @@ const imageSize = {
 
 export default function Home() {
   const state = useScrollController(images);
-  const firstRender = useRef(true);
+  const canChange = useRef(true);
 
   useEffect(() => {
+    if (!canChange.current) {
+      return;
+    }
     const pageDimensions = {
       width: document.documentElement.clientWidth,
       height: document.documentElement.clientHeight,
@@ -72,28 +74,52 @@ export default function Home() {
         y: origin.y - 2 * pattern.y,
       },
     ];
+    const isOutside = (i: number) => i === 0 || i === positions.length - 1;
 
-    const imgs = gsap.utils.toArray<HTMLElement>("#slider-images__wrapper > *").forEach((el, idx) => {
-      let elIdx = Number(el.getAttribute("data-idx"));
+    const tl = gsap.timeline({
+      onStart: () => {
+        canChange.current = false;
+      },
+      onComplete: () => {
+        canChange.current = true;
+      },
+    });
+
+    gsap.utils.toArray<HTMLElement>("#slider-images__wrapper > *").forEach((el, idx) => {
+      const oldIdx = Number(el.getAttribute("data-idx"));
+      let newIdx = oldIdx;
 
       if (state.direction === "down") {
-        elIdx = (elIdx - 1 + images.length) % images.length;
+        newIdx = (newIdx - 1 + images.length) % images.length;
       } else {
-        elIdx = (elIdx + 1) % images.length;
+        newIdx = (newIdx + 1) % images.length;
       }
 
-      if (elIdx === 0 || elIdx === images.length - 1) {
+      const newPosition = positions[newIdx];
+      // check if the image is being placed from an outside edge to another (0, to last)
+      if (isOutside(oldIdx) && isOutside(newIdx)) {
         gsap.set(el as HTMLElement, {
-          left: positions[elIdx].x,
-          top: positions[elIdx].y,
+          left: newPosition.x,
+          top: newPosition.y,
         });
       } else {
-        gsap.to(el as HTMLElement, {
-          left: positions[elIdx].x,
-          top: positions[elIdx].y,
-        });
+        tl.to(
+          el as HTMLElement,
+          {
+            left: newPosition.x,
+            top: newPosition.y,
+            // we are animating height & width because transform: scale
+            // affects borders and makes life more complicated. TL;DR worth the compromise
+            height: newPosition.x === origin.x ? imageSize.height * 2.05 : imageSize.height,
+            width: newPosition.x === origin.x ? imageSize.width * 2.05 : imageSize.width,
+            duration: 0.6,
+            ease: "power4.inOut",
+          },
+          "<"
+        );
       }
-      el.setAttribute("data-idx", elIdx.toString());
+
+      el.setAttribute("data-idx", newIdx.toString());
     });
   }, [state.activeIdx, state.direction]);
 
@@ -101,6 +127,11 @@ export default function Home() {
     <Container>
       <div className="debug" />
       <BGImagesWrapper>
+        <BGImages>
+          {images.map(({ id, url }) => (
+            <BlurredImage key={id} src={url} $isActive={id === state.activeIdx} fill alt="Background image" />
+          ))}
+        </BGImages>
         <SliderImagesWrapper id="slider-images__wrapper">
           {images.map(({ id, url, alt }) => (
             <SliderImage key={id} data-idx={id}>
@@ -108,11 +139,6 @@ export default function Home() {
             </SliderImage>
           ))}
         </SliderImagesWrapper>
-        <BGImages>
-          {images.map(({ id, url }) => (
-            <BlurredImage key={id} src={url} $isActive={id === state.activeIdx} fill alt="Background image" />
-          ))}
-        </BGImages>
       </BGImagesWrapper>
       <Header>
         <nav>

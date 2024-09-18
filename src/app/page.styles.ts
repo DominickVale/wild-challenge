@@ -80,9 +80,9 @@ export const SliderImage = styled.div`
   height: 330px;
   width: 248px;
 
-  img {
-    box-shadow: inset 0px 0px 0px 1px rgba(255, 255, 255, 0.1);
+  & > img {
     border-radius: 10px;
+    outline: 1px solid black;
   }
 `;
 
