@@ -8,6 +8,7 @@ import { useState } from "react";
 import { isFirstOrLast } from "@/lib/utils/array";
 import { images, imageSize } from "@/lib/constants";
 import { CTA, P } from "../Typography";
+import { useCursor } from "../Cursor";
 import { useCarouselPositions, useScrollController } from "./Carousel.hooks";
 import {
   BGImages,
@@ -26,6 +27,7 @@ import { CarouselCTA } from "./CarouselCTA";
 export const Carousel = () => {
   const scrollState = useScrollController(images);
   const pageDimensions = useSize(typeof window !== "undefined" ? document.documentElement : null);
+  const { setCursorState } = useCursor();
   const [activeImageId, setActiveImageId] = useState(0);
 
   const [canChange, setCanChange] = useState(true);
@@ -107,8 +109,14 @@ export const Carousel = () => {
       }
       el.setAttribute("data-idx", newIdx.toString());
       if (isCenter) {
-        const imgId = el.getAttribute("data-img-id");
-        setActiveImageId(Number(imgId));
+        const imgId = Number(el.getAttribute("data-img-id"));
+        setActiveImageId(imgId);
+        if (setCursorState) {
+          setCursorState({
+            current: imgId,
+            total: images.length,
+          });
+        }
       }
     });
   }, [scrollState.activeIdx, scrollState.direction, pageDimensions]);

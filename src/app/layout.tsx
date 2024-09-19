@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeWrapper } from "@/components/ThemeWrapper";
-import { Cursor } from "@/components/Cursor";
+import { CursorProvider } from "@/components/Cursor";
 import { tungstenBold, tungstenSemiBold } from "./fonts";
 
 export const metadata: Metadata = {
@@ -18,8 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${tungstenBold.className} ${tungstenSemiBold.className}`}>
         <ThemeWrapper>
-          {children}
-          <Cursor />
+          <CursorProvider>{children}</CursorProvider>
         </ThemeWrapper>
       </body>
     </html>
