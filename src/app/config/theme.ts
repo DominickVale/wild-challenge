@@ -5,8 +5,9 @@ const theme = {
     typeDark: "#202020",
   },
   fontSize: {
-    default: "1rem",
+    smallest: "0.5rem",
     small: "0.625rem",
+    default: "1rem",
     huge: "13.75rem",
   },
   animations: {
