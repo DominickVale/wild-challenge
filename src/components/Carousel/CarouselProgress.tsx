@@ -1,53 +1,56 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import styled from "styled-components";
+import { useGSAP } from "@gsap/react";
+import { useSize } from "ahooks";
+import gsap from "gsap";
+import { useRef } from "react";
 import { Flex } from "../Flex";
 import { ProgressBar, ProgressBarDot } from "../ProgressBar";
 import { P } from "../Typography";
+import { ProgressContainer } from "./CarouselProgress.styles";
 
-export const CarouselProgress = ({ maxWidth = 100 }) => {
-  const [position, setPosition] = useState({ top: 0, left: 0 });
+type Props = {
+  pageDimensions: ReturnType<typeof useSize>;
+  state: {
+    current: number;
+    total: number;
+  };
+};
+
+export const CarouselProgress = (props: Props) => {
+  const { pageDimensions, state } = props;
   const carouselRef = useRef(null);
 
-  useEffect(() => {
+  useGSAP(() => {
     const svgTextElement = document.querySelector("#carousel__svg-text");
-
     if (svgTextElement) {
       const tspans = svgTextElement.querySelectorAll("tspan");
-
-      if (tspans.length > 0) {
+      if (tspans.length > 1) {
         const lastTspan = tspans[tspans.length - 1];
         const boundingBox = lastTspan.getBoundingClientRect();
 
-        setPosition({
-          top: boundingBox.bottom + 20, // 20px below the last tspan
-          left: boundingBox.left,
+        gsap.set(carouselRef.current, {
+          top: `calc((${Math.ceil(boundingBox.bottom)} / 16 * 1rem) - 2rem)`,
+          left: 0,
         });
       }
     }
-  }, []);
+  }, [pageDimensions]);
 
   return (
-    <ProgressContainer ref={carouselRef} style={{ top: position.top, left: 0 }}>
+    <ProgressContainer ref={carouselRef}>
       <Flex direction="row" gap="1.5rem">
-        <P>1 of 5</P>
+        <P>
+          {state.current + 1} of {state.total}
+        </P>
         <ProgressBar>
-          <ProgressBarDot $isActive />
-          <ProgressBarDot />
-          <ProgressBarDot />
-          <ProgressBarDot />
-          <ProgressBarDot />
+          {Array(state.total)
+            .fill(null)
+            .map((_, idx) => (
+              <ProgressBarDot key={idx} $isActive={idx === state.current} />
+            ))}
         </ProgressBar>
       </Flex>
     </ProgressContainer>
   );
 };
-
-const ProgressContainer = styled.div`
-  position: absolute;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;

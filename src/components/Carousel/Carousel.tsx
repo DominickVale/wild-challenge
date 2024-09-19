@@ -7,8 +7,6 @@ import Image from "next/image";
 import { useState } from "react";
 import { isFirstOrLast } from "@/lib/utils/array";
 import { images, imageSize } from "@/lib/constants";
-import { Flex } from "../Flex";
-import { ProgressBar, ProgressBarDot } from "../ProgressBar";
 import { CTA, P } from "../Typography";
 import { useCarouselPositions, useScrollController } from "./Carousel.hooks";
 import {
@@ -21,8 +19,8 @@ import {
   SliderImagesWrapper,
   TitleSection,
 } from "./Carousel.styles";
-import { CarouselTitle } from "./CarouselTitle";
 import { CarouselProgress } from "./CarouselProgress";
+import { CarouselTitle } from "./CarouselTitle";
 
 export const Carousel = () => {
   const scrollState = useScrollController(images);
@@ -87,7 +85,7 @@ export const Carousel = () => {
             // affects borders and makes life more complicated. TL;DR worth the compromise
             height: scaledImageSize.height,
             width: scaledImageSize.width,
-            duration: 1.5,
+            duration: 0.3,
             ease: "power4.inOut",
           },
           "<"
@@ -100,7 +98,7 @@ export const Carousel = () => {
             },
             height: isCenter ? imageSize.height * 2.05 : imageSize.height,
             width: isCenter ? imageSize.width * 2.05 : imageSize.width,
-            duration: 1.5,
+            duration: 0.3,
             ease: "power4.inOut",
           },
           "<"
@@ -157,7 +155,7 @@ export const Carousel = () => {
       </BGImagesWrapper>
       <TitleSection>
         <CarouselTitle text={text} />
-        <CarouselProgress />
+        <CarouselProgress pageDimensions={pageDimensions} state={{ current: activeImageId, total: images.length }} />
         {/* <CarouselTitle> */}
         {/*   EVERYDAY */}
         {/*   <br /> */}
