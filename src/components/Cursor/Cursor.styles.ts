@@ -1,23 +1,14 @@
 "use client";
 import styled from "styled-components";
 
-type CursorWrapperProps = {
-  $x: number | null;
-  $y: number | null;
-};
-
-export const CursorWrapper = styled.div.attrs<CursorWrapperProps>((props) => ({
-  style: {
-    transform: `translate(calc(${props.$x}px - 1.25rem), calc(${props.$y}px - 1.25rem))`,
-  },
-}))`
+export const CursorWrapper = styled.div`
   position: fixed;
   top: 0;
   left: 0;
   width: 2.5rem;
   height: 2.5rem;
   pointer-events: none;
-  will-change: transform;
+  transform-origin: center;
 `;
 
 export const CursorInnerWrapper = styled.div`
@@ -41,4 +32,5 @@ export const CursorInner = styled.div`
 
 export const CursorProgress = styled.svg`
   transform: rotate(-90deg);
+  transform-origin: center;
 `;

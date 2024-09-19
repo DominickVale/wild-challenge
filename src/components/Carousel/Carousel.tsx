@@ -115,6 +115,7 @@ export const Carousel = () => {
           setCursorState({
             current: imgId,
             total: images.length,
+            direction: scrollState.direction,
           });
         }
       }
