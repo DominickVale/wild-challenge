@@ -21,6 +21,7 @@ import {
 } from "./Carousel.styles";
 import { CarouselProgress } from "./CarouselProgress";
 import { CarouselTitle } from "./CarouselTitle";
+import { CarouselCTA } from "./CarouselCTA";
 
 export const Carousel = () => {
   const scrollState = useScrollController(images);
@@ -156,20 +157,7 @@ export const Carousel = () => {
       <TitleSection>
         <CarouselTitle text={text} />
         <CarouselProgress pageDimensions={pageDimensions} state={{ current: activeImageId, total: images.length }} />
-        {/* <CarouselTitle> */}
-        {/*   EVERYDAY */}
-        {/*   <br /> */}
-        {/*   FLOWERS */}
-        {/* </CarouselTitle> */}
-        <CTASection>
-          <P>
-            JOHANNA HOBEL
-            <br />
-            FOR WILD
-          </P>
-          <P>DEC 2019</P>
-          <CTA href="/">HAVE A LOOK</CTA>
-        </CTASection>
+        <CarouselCTA currentIdx={activeImageId} />
       </TitleSection>
     </Container>
   );
