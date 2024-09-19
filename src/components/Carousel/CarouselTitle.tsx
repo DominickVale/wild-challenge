@@ -18,7 +18,13 @@ type Props = {
 export const CarouselTitle = (props: Props) => {
   const { text } = props;
   return (
-    <svg id="carousel__title" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      id="carousel__title"
+      width="100%"
+      height="100%"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ pointerEvents: "none", userSelect: "none" }}
+    >
       <defs>
         <clipPath id="textClip">
           <Text

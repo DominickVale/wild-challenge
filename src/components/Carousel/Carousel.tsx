@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { isFirstOrLast } from "@/lib/utils/array";
 import { images, imageSize } from "@/lib/constants";
+import { theme } from "@/app/config/theme";
 import { CTA, P } from "../Typography";
 import { useCursor } from "../Cursor";
 import { useCarouselPositions, useScrollController } from "./Carousel.hooks";
@@ -88,8 +89,8 @@ export const Carousel = () => {
             // affects borders and makes life more complicated. TL;DR worth the compromise
             height: scaledImageSize.height,
             width: scaledImageSize.width,
-            duration: 0.3,
-            ease: "power4.inOut",
+            duration: theme.animations.carousel.slideDuration,
+            ease: theme.animations.carousel.slideEase,
           },
           "<"
         ).to(
@@ -101,8 +102,8 @@ export const Carousel = () => {
             },
             height: isCenter ? imageSize.height * 2.05 : imageSize.height,
             width: isCenter ? imageSize.width * 2.05 : imageSize.width,
-            duration: 0.3,
-            ease: "power4.inOut",
+            duration: theme.animations.carousel.slideDuration,
+            ease: theme.animations.carousel.slideEase,
           },
           "<"
         );
@@ -128,14 +129,14 @@ export const Carousel = () => {
       .timeline()
       .to("#slider-bg__wrapper > *", {
         opacity: 0,
-        duration: 0.5,
+        duration: theme.animations.carousel.backgroundDuration,
         ease: "power4.inOut",
       })
       .to(
         `#slider-bg__wrapper > *:nth-child(${activeImageId + 1})`,
         {
           opacity: 1,
-          duration: 0.5,
+          duration: theme.animations.carousel.backgroundDuration,
           ease: "power4.inOut",
         },
         "<"

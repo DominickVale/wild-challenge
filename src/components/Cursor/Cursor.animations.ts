@@ -2,6 +2,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { CursorState } from "./Cursor";
 import { MutableRefObject, useRef } from "react";
+import { theme } from "@/app/config/theme";
 
 /*
  * Animates the progress of the animation bar based on current idx
@@ -21,8 +22,8 @@ export function useCursorProgressAnimation(
         .timeline()
         .to(progressRef.current, {
           strokeDashoffset: offset,
-          duration: 0.5,
-          ease: "power4.inOut",
+          duration: theme.animations.cursor.progressDuration,
+          ease: theme.animations.cursor.progressEase,
         })
         .set(progressRef.current, { attr: { transform: "rotate(0)" } });
     };
@@ -33,8 +34,8 @@ export function useCursorProgressAnimation(
     if (isWrappingForward) {
       gsap.timeline().to(progressRef.current, {
         attr: { transform: "rotate(360)" },
-        duration: 0.5,
-        ease: "power4.inOut",
+        duration: theme.animations.cursor.progressDuration,
+        ease: theme.animations.cursor.progressEase,
       });
       animateProgress();
     } else if (isWrappingBackward) {
@@ -42,8 +43,8 @@ export function useCursorProgressAnimation(
         .timeline()
         .to(progressRef.current, {
           attr: { transform: `rotate(-360)` },
-          duration: 0.5,
-          ease: "power4.inOut",
+          duration: theme.animations.cursor.progressDuration,
+          ease: theme.animations.cursor.progressEase,
         })
         .set(progressRef.current, { attr: { transform: `rotate(0)` } });
       animateProgress();
@@ -73,8 +74,14 @@ export function useElasticCursorAnimation(elRef: MutableRefObject<HTMLElement | 
 
     gsap.set(elRef.current, { xPercent: -50, yPercent: -50 });
 
-    const xTo = gsap.quickTo(elRef.current, "x", { duration: 0.5, ease: "elastic.out(0.2,0.15)" });
-    const yTo = gsap.quickTo(elRef.current, "y", { duration: 0.5, ease: "elastic.out(0.2,0.15)" });
+    const xTo = gsap.quickTo(elRef.current, "x", {
+      duration: theme.animations.cursor.dampenDuration,
+      ease: theme.animations.cursor.dampenEase,
+    });
+    const yTo = gsap.quickTo(elRef.current, "y", {
+      duration: theme.animations.cursor.dampenDuration,
+      ease: theme.animations.cursor.dampenEase,
+    });
 
     const handleMouseMove = (e: MouseEvent) => {
       xTo(e.clientX);

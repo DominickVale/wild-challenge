@@ -33,4 +33,9 @@ export const CTA = styled.a`
   color: ${(p) => p.theme.colors.typeDark};
   border-radius: 1.5rem;
   padding: 0.563rem 1rem 0.625rem 1rem;
+  transition: all 0.3s ease-in-out;
+  &:hover {
+    background-color: ${(p) => p.theme.colors.typeDark};
+    color: ${(p) => p.theme.colors.typeLight};
+  }
 `;
