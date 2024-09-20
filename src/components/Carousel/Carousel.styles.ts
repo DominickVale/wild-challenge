@@ -10,6 +10,7 @@ export const TitleSection = styled.main`
   height: 100%;
   flex-direction: column;
   gap: 0.5rem;
+  z-index: 10;
 `;
 
 export const CTASection = styled.section`
@@ -35,7 +36,6 @@ export const BGImagesWrapper = styled.div`
   top: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
 `;
 
 export const BGImages = styled.div`
@@ -91,6 +91,7 @@ export const Container = styled.div`
 `;
 
 export const CarouselTitleText = styled(HeroType)`
+  z-index: 10;
   color: transparent;
   -webkit-text-stroke: 2px ${(p) => p.theme.colors.typeLight};
 `;

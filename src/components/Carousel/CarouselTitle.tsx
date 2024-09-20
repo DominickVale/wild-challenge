@@ -1,6 +1,7 @@
 "use client";
 
 import { Text } from "@visx/text";
+import { useEffect, useState } from "react";
 import { theme } from "@/app/config/theme";
 import { tungstenSemiBold } from "@/app/fonts";
 import { images, imageSize } from "@/lib/constants";
@@ -17,13 +18,19 @@ type Props = {
 
 export const CarouselTitle = (props: Props) => {
   const { text } = props;
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <svg
       id="carousel__title"
       width="100%"
       height="100%"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ pointerEvents: "none", userSelect: "none" }}
+      style={{ pointerEvents: "none", userSelect: "none", zIndex: 10 }}
     >
       <defs>
         <clipPath id="textClip">
@@ -41,7 +48,7 @@ export const CarouselTitle = (props: Props) => {
             style={{ letterSpacing: ls, textTransform: "uppercase" }}
             width={width}
           >
-            {text}
+            {isClient ? text : ""}
           </Text>
         </clipPath>
       </defs>
@@ -76,7 +83,7 @@ export const CarouselTitle = (props: Props) => {
         strokeWidth="2"
         width={width}
       >
-        {text}
+        {isClient ? text : ""}
       </Text>
     </svg>
   );

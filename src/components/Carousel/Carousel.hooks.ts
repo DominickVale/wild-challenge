@@ -2,12 +2,12 @@ import { Size, Vec2 } from "@/types";
 import { useDebounceFn } from "ahooks";
 import { useEffect, useState } from "react";
 
-type Returns = {
+export type CarouselPositions = {
   positions: Vec2[];
   origin: Vec2;
 };
 
-export function useCarouselPositions(pageDimensions: Size | undefined, arr: unknown[], imageSize: Size): Returns {
+export function useCarouselPositions(pageDimensions: Size | undefined, arr: unknown[], imageSize: Size): CarouselPositions {
   const [positions, setPositions] = useState<Vec2[]>([]);
   const [origin, setOrigin] = useState<Vec2>({ x: 0, y: 0 });
   useEffect(() => {
@@ -46,10 +46,13 @@ export type ScrollControllerState = {
   direction: "up" | "down";
 };
 
-export function useScrollController(items: unknown[]): ScrollControllerState {
-  const [state, setState] = useState<{ lastTouchY: number; currIdx: number; lastDirection: "down" | "up" }>({
+export type ScrollDirection = "up" | "down";
+export type onScrollControllerCb = (newIdx: number, direction: ScrollDirection) => void;
+
+export function useScrollController(items: unknown[], onScroll: onScrollControllerCb): ScrollControllerState {
+  const [state, setState] = useState<{ lastTouchY: number; currIdx: number; lastDirection: ScrollDirection }>({
     lastTouchY: 0,
-    currIdx: 2,
+    currIdx: 0,
     lastDirection: "down",
   });
 
@@ -77,6 +80,7 @@ export function useScrollController(items: unknown[]): ScrollControllerState {
         }
       }
 
+      onScroll(newIdx, direction);
       setState((prevState) => ({ ...prevState, currIdx: newIdx, lastDirection: direction }));
     },
     { wait: 50, leading: true, trailing: false }

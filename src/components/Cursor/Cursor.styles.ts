@@ -9,6 +9,7 @@ export const CursorWrapper = styled.div`
   height: 2.5rem;
   pointer-events: none;
   transform-origin: center;
+  z-index: 100;
 `;
 
 export const CursorInnerWrapper = styled.div`

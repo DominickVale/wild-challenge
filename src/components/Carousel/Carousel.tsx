@@ -1,16 +1,16 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
-import { useSize } from "ahooks";
+import { useMount, useSize } from "ahooks";
 import gsap from "gsap";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { isFirstOrLast } from "@/lib/utils/array";
 import { images, imageSize } from "@/lib/constants";
 import { theme } from "@/app/config/theme";
 import { CTA, P } from "../Typography";
 import { useCursor } from "../Cursor";
-import { useCarouselPositions, useScrollController } from "./Carousel.hooks";
+import { type onScrollControllerCb, useCarouselPositions, useScrollController } from "./Carousel.hooks";
 import {
   BGImages,
   BGImagesWrapper,
@@ -24,129 +24,86 @@ import {
 import { CarouselProgress } from "./CarouselProgress";
 import { CarouselTitle } from "./CarouselTitle";
 import { CarouselCTA } from "./CarouselCTA";
+import { useOnScrollCarousel } from "./Carousel.animations";
+
+gsap.registerPlugin(useGSAP);
 
 export const Carousel = () => {
-  const scrollState = useScrollController(images);
   const pageDimensions = useSize(typeof window !== "undefined" ? document.documentElement : null);
   const { setCursorState } = useCursor();
-  const [activeImageId, setActiveImageId] = useState(0);
+  const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
+  const hasAnimatedIn = useRef(true);
 
   const [canChange, setCanChange] = useState(true);
-  const [text, setText] = useState("");
-  const { positions, origin } = useCarouselPositions(pageDimensions, images, imageSize);
+  const [text, setText] = useState(images[activeImageIdx].title);
+  const carouselPositions = useCarouselPositions(pageDimensions, images, imageSize);
 
-  // Main carousel animation (diagonal slide)
+  const onScrollCarousel = useOnScrollCarousel({
+    canChange,
+    setCanChange,
+    carouselPositions,
+    pageDimensions,
+    onChange: (imgId, direction) => {
+      const imgIdx = findImageIdxById(imgId);
+      if (setCursorState && imgIdx >= 0) {
+        setActiveImageIdx(imgIdx);
+        setCursorState({
+          current: imgIdx,
+          total: images.length,
+          direction: direction,
+        });
+      }
+    },
+  });
+
   useGSAP(() => {
-    if (!canChange || !pageDimensions || positions.length < 5) {
-      return;
+    if (hasAnimatedIn.current && carouselPositions.positions?.length >= 5) {
+      onScrollCarousel(0, "down");
+      hasAnimatedIn.current = false;
     }
+  }, [carouselPositions.positions, onScrollCarousel]);
 
-    const tl = gsap.timeline({
-      onStart: () => {
-        setCanChange(false);
-      },
-      onComplete: () => {
-        setCanChange(true);
-      },
-    });
-
-    gsap.utils.toArray<HTMLElement>("#slider-images__wrapper > *").forEach((el, idx) => {
-      const oldIdx = Number(el.getAttribute("data-idx"));
-      let newIdx = oldIdx || 0;
-
-      if (scrollState.direction === "down") {
-        newIdx = (newIdx - 1 + images.length) % images.length;
-      } else {
-        newIdx = (newIdx + 1) % images.length;
-      }
-
-      const newPosition = positions[newIdx];
-      const isCenter = newPosition.x === origin.x;
-      const scaledImageSize = {
-        width: isCenter ? imageSize.width * 2.05 : imageSize.width,
-        height: isCenter ? imageSize.height * 2.05 : imageSize.height,
-      };
-      const maskRectangle = document.querySelector(`#carousel__title .carousel__svg-mask-rect:nth-child(${idx + 2})`);
-      // check if the image is being placed from an outside edge to another (0, to last)
-      if (isFirstOrLast(oldIdx, images) && isFirstOrLast(newIdx, images)) {
-        gsap.set(el as HTMLElement, {
-          left: newPosition.x,
-          top: newPosition.y,
-        });
-        gsap.set(maskRectangle as SVGRectElement, {
-          attr: {
-            x: newPosition.x - imageSize.width / 2,
-            y: newPosition.y - imageSize.height / 2,
-          },
-        });
-      } else {
-        tl.to(
-          el as HTMLElement,
-          {
-            left: newPosition.x,
-            top: newPosition.y,
-            // we are animating height & width because transform: scale
-            // affects borders and makes life more complicated. TL;DR worth the compromise
-            height: scaledImageSize.height,
-            width: scaledImageSize.width,
-            duration: theme.animations.carousel.slideDuration,
-            ease: theme.animations.carousel.slideEase,
-          },
-          "<"
-        ).to(
-          maskRectangle as SVGRectElement,
-          {
-            attr: {
-              x: newPosition.x - scaledImageSize.width / 2 - 16,
-              y: newPosition.y - scaledImageSize.height / 2 - 16,
-            },
-            height: isCenter ? imageSize.height * 2.05 : imageSize.height,
-            width: isCenter ? imageSize.width * 2.05 : imageSize.width,
-            duration: theme.animations.carousel.slideDuration,
-            ease: theme.animations.carousel.slideEase,
-          },
-          "<"
-        );
-      }
-      el.setAttribute("data-idx", newIdx.toString());
-      if (isCenter) {
-        const imgId = Number(el.getAttribute("data-img-id"));
-        setActiveImageId(imgId);
-        if (setCursorState) {
-          setCursorState({
-            current: imgId,
-            total: images.length,
-            direction: scrollState.direction,
-          });
-        }
-      }
-    });
-  }, [scrollState.activeIdx, scrollState.direction, pageDimensions]);
+  const scrollState = useScrollController(images, onScrollCarousel);
 
   // Background (blurred) images animations
   useGSAP(() => {
-    const tl = gsap
-      .timeline()
-      .to("#slider-bg__wrapper > *", {
-        opacity: 0,
-        duration: theme.animations.carousel.backgroundDuration,
-        ease: "power4.inOut",
-      })
-      .to(
-        `#slider-bg__wrapper > *:nth-child(${activeImageId + 1})`,
-        {
-          opacity: 1,
+    if (activeImageIdx >= 0) {
+      const tl = gsap
+        .timeline()
+        .to("#slider-bg__wrapper > *", {
+          opacity: 0,
           duration: theme.animations.carousel.backgroundDuration,
           ease: "power4.inOut",
-        },
-        "<"
-      );
-  }, [activeImageId]);
+        })
+        .to(
+          `#slider-bg__wrapper > *:nth-child(${activeImageIdx + 1})`,
+          {
+            opacity: 1,
+            duration: theme.animations.carousel.backgroundDuration,
+            ease: "power4.inOut",
+          },
+          "<"
+        );
+    }
+  }, [activeImageIdx]);
 
   //Title & mask animations
   useGSAP(() => {
-    setText(images[activeImageId].title);
-  }, [activeImageId]);
+    const title = images[activeImageIdx]?.title;
+    if (title) {
+      setText(title);
+    }
+  }, [activeImageIdx]);
+
+  function onSliderImageClick(e: React.MouseEvent<HTMLDivElement>) {
+    const idx = Number(e.currentTarget.getAttribute("data-idx")) || 0;
+    const middleIdx = Math.floor(images.length / 2);
+    if (idx < middleIdx) {
+      onScrollCarousel(activeImageIdx - 1, "up");
+    } else if (idx > middleIdx) {
+      onScrollCarousel(activeImageIdx + 1, "down");
+    }
+  }
 
   return (
     <Container id="carousel">
@@ -157,8 +114,8 @@ export const Carousel = () => {
           ))}
         </BGImages>
         <SliderImagesWrapper id="slider-images__wrapper">
-          {images.map(({ id, url, alt }) => (
-            <SliderImage key={id} data-idx={id} data-img-id={id}>
+          {images.map(({ id, url, alt }, idx) => (
+            <SliderImage key={id} data-idx={idx} data-img-id={id} onClick={onSliderImageClick}>
               <Image src={url} fill alt={alt} />
             </SliderImage>
           ))}
@@ -166,9 +123,15 @@ export const Carousel = () => {
       </BGImagesWrapper>
       <TitleSection>
         <CarouselTitle text={text} />
-        <CarouselProgress pageDimensions={pageDimensions} state={{ current: activeImageId, total: images.length }} />
-        <CarouselCTA currentIdx={activeImageId} />
+        <CarouselProgress
+          pageDimensions={pageDimensions}
+          state={{ current: activeImageIdx, total: images.length, direction: scrollState.direction }}
+        />
+        <CarouselCTA currentIdx={activeImageIdx} />
       </TitleSection>
     </Container>
   );
 };
+
+const findImageById = (id: string) => images.find((v) => v.id === id);
+const findImageIdxById = (id: string) => images.findIndex((v) => v.id === id);

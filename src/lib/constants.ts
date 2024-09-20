@@ -1,6 +1,6 @@
 export const images = [
   {
-    id: 0,
+    id: "image01",
     url: "/images/image01.jpg",
     alt: "background picture",
     title: "everyday flowers",
@@ -9,7 +9,7 @@ export const images = [
     client: "wild",
   },
   {
-    id: 1,
+    id: "image02",
     url: "/images/image02.jpg",
     alt: "background picture",
     title: "the wilder night",
@@ -18,7 +18,7 @@ export const images = [
     client: "wild",
   },
   {
-    id: 2,
+    id: "image03",
     url: "/images/image03.jpg",
     alt: "background picture",
     title: "smooth memories",
@@ -27,7 +27,7 @@ export const images = [
     client: "chanel",
   },
   {
-    id: 3,
+    id: "image04",
     url: "/images/image04.jpg",
     alt: "background picture",
     title: "the future universe",
@@ -36,7 +36,7 @@ export const images = [
     date: "apr 2020",
   },
   {
-    id: 4,
+    id: "image05",
     url: "/images/image05.jpg",
     alt: "background picture",
     title: "she was born urban",
