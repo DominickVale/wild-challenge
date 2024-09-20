@@ -68,10 +68,16 @@ export const SliderImage = styled.div`
   transform-origin: center;
   height: 330px;
   width: 248px;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 10px;
+  outline: 1px solid black;
 
   & > img {
-    border-radius: 10px;
-    outline: 1px solid black;
+    position: fixed;
+    transform-origin: center;
+    left: 0;
+    top: 0;
   }
 `;
 

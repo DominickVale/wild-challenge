@@ -1,10 +1,10 @@
 "use client";
 
 import { Text } from "@visx/text";
-import { useEffect, useState } from "react";
 import { theme } from "@/app/config/theme";
 import { tungstenSemiBold } from "@/app/fonts";
 import { images, imageSize } from "@/lib/constants";
+import { useIsClient } from "@/lib/hooks/useIsClient";
 
 const width = 70;
 const height = "64.4%";
@@ -18,11 +18,7 @@ type Props = {
 
 export const CarouselTitle = (props: Props) => {
   const { text } = props;
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const isClient = useIsClient();
 
   return (
     <svg

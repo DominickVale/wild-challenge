@@ -21,6 +21,31 @@ export function useOnScrollCarousel(props: Props) {
 
   const { contextSafe } = useGSAP();
 
+  const parallax = contextSafe((el: HTMLImageElement, direction: ScrollDirection) => {
+    const offset = theme.animations.carousel.imageSizeOffset;
+    const dividedOffset = offset / 3
+    const xMove = direction === "down" ? dividedOffset : -dividedOffset;
+    const yMove = direction === "down" ? -dividedOffset : dividedOffset;
+
+    gsap.set(el, {
+      width: 100 + offset + "%",
+      height: 100 + offset + "%",
+      left: -dividedOffset+"%",
+      top: -dividedOffset+"%",
+    });
+    gsap.timeline()
+      .to(el, {
+        transform: `translate(${xMove}%, ${yMove}%)`,
+        duration: theme.animations.carousel.slideDuration/1.8,
+        ease: "power3.inOut",
+      })
+      .to(el, {
+        transform: `translate(0, 0)`,
+        duration: theme.animations.carousel.slideDuration/2,
+        ease: "power3.out",
+      })
+  });
+
   // Main carousel animation (diagonal slide)
   const updateSlider = contextSafe<onScrollControllerCb>((newScrollIdx, direction) => {
     if (!canChange || !pageDimensions || positions.length < 5) {
@@ -53,9 +78,12 @@ export function useOnScrollCarousel(props: Props) {
         height: isCenter ? imageSize.height * 2.05 : imageSize.height,
       };
       const maskRectangle = document.querySelector(`#carousel__title .carousel__svg-mask-rect:nth-child(${idx + 2})`);
+      const imgEl = el.querySelector("img") as HTMLImageElement;
+      parallax(imgEl, direction);
+
       // check if the image is being placed from an outside edge to another (0, to last)
       if (isFirstOrLast(oldIdx, images) && isFirstOrLast(newIdx, images)) {
-        gsap.set(el as HTMLElement, {
+        gsap.set(el, {
           left: newPosition.x,
           top: newPosition.y,
         });
@@ -67,7 +95,7 @@ export function useOnScrollCarousel(props: Props) {
         });
       } else {
         tl.to(
-          el as HTMLElement,
+          el,
           {
             left: newPosition.x,
             top: newPosition.y,
@@ -77,6 +105,7 @@ export function useOnScrollCarousel(props: Props) {
             width: scaledImageSize.width,
             duration: theme.animations.carousel.slideDuration,
             ease: theme.animations.carousel.slideEase,
+            stagger: 0.5,
           },
           "<"
         ).to(

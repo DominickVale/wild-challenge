@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import gsap from "gsap";
 import { images } from "@/lib/constants";
 import { theme } from "@/app/config/theme";
+import { useIsClient } from "@/lib/hooks/useIsClient";
 import { CTA, P } from "../Typography";
 import { CTASection } from "./Carousel.styles";
 
@@ -17,10 +18,12 @@ export const CarouselCTA = (props: Props) => {
   const { currentIdx } = props;
   const sectionRef = useRef(null);
   const state = images[currentIdx];
+  const isClient = useIsClient();
 
   useGSAP(() => {
+    if (!isClient) return;
     const durationOut = theme.animations.carousel.slideDuration / 3;
-    const durationIn = theme.animations.carousel.slideDuration / 1.5;
+    const durationIn = theme.animations.carousel.slideDuration / 2;
     const ease = "power4.inOut";
     gsap
       .timeline()
@@ -38,19 +41,27 @@ export const CarouselCTA = (props: Props) => {
           duration: durationOut,
           ease,
         },
-        "<"
+        "<+30%"
       )
-      .to(
-        "#carousel__cta-button",
-        {
-          autoAlpha: 0,
-          duration: durationOut,
-          ease,
-        },
-        "<"
-      )
+      // .to(
+      //   "#carousel__cta-button",
+      //   {
+      //     autoAlpha: 0,
+      //     duration: durationIn,
+      //     ease,
+      //   },
+      //   "<"
+      // )
+      .set("#carousel__cta-details > p:first-child", {
+        text: state.author,
+      })
+      .set("#carousel__cta-details > p:last-child", {
+        text: "for " + state.client,
+      })
+      .set("#carousel__cta-date", {
+        text: state.date,
+      })
       .to("#carousel__cta > :first-child", {
-        delay: theme.animations.carousel.slideDuration,
         x: "0",
         autoAlpha: 1,
         duration: durationIn,
@@ -65,27 +76,26 @@ export const CarouselCTA = (props: Props) => {
           duration: durationIn,
           ease,
         },
-        "<"
-      )
-      .to(
-        "#carousel__cta-button",
-        {
-          autoAlpha: 1,
-          duration: durationIn,
-          ease,
-        },
-        "<"
+        "<+30%"
       );
+    // .to(
+    //   "#carousel__cta-button",
+    //   {
+    //     autoAlpha: 1,
+    //     duration: durationIn,
+    //     ease,
+    //   },
+    //   "<30%"
+    // );
   }, [currentIdx]);
 
   return (
     <CTASection ref={sectionRef} id="carousel__cta">
-      <P>
-        {state.author}
-        <br />
-        FOR {state.client}
-      </P>
-      <P>{state.date}</P>
+      <span id="carousel__cta-details">
+        <P>{images[0].author}</P>
+        <P>FOR {images[0].client}</P>
+      </span>
+      <P id="carousel__cta-date">{images[0].date}</P>
       <CTA href="/" id="carousel__cta-button">
         HAVE A LOOK
       </CTA>

@@ -22,8 +22,16 @@ type Props = {
 
 export const CarouselProgress = (props: Props) => {
   const { pageDimensions, state } = props;
-  const carouselRef = useRef(null);
+  const progressContainerRef = useRef(null);
   const [isFirstSpan, setIsFirstSpan] = useState(true);
+
+  useGSAP(() => {
+    gsap.to(progressContainerRef.current, {
+      autoAlpha: 1,
+      duration: 1,
+      ease: "power3.inOut",
+    });
+  }, []);
 
   useGSAP(() => {
     const svgTextElement = document.querySelector("#carousel__svg-text");
@@ -33,7 +41,7 @@ export const CarouselProgress = (props: Props) => {
         const lastTspan = tspans[tspans.length - 1];
         const boundingBox = lastTspan.getBoundingClientRect();
 
-        gsap.set(carouselRef.current, {
+        gsap.set(progressContainerRef.current, {
           top: `calc((${Math.ceil(boundingBox.bottom)} / 16 * 1rem) - 2rem)`,
           left: 0,
         });
@@ -68,7 +76,7 @@ export const CarouselProgress = (props: Props) => {
   }, [state.current]);
 
   return (
-    <ProgressContainer ref={carouselRef}>
+    <ProgressContainer ref={progressContainerRef}>
       <Flex direction="row" gap="1.5rem" align="flex-end">
         <ProgressCounterText id="carousel__counter">
           <span>

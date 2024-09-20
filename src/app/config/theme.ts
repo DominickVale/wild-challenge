@@ -12,9 +12,10 @@ const theme = {
   },
   animations: {
     carousel: {
-      slideDuration: 1,
+      slideDuration: 1.5,
       slideEase: "power3.inOut",
       backgroundDuration: 2,
+      imageSizeOffset: 8,
     },
     cursor: {
       progressDuration: 1.5,

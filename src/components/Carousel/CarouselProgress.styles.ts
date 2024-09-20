@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { P } from "../Typography";
 
 export const ProgressContainer = styled.div`
+  opacity: 0;
   position: absolute;
   width: 100%;
   display: flex;
