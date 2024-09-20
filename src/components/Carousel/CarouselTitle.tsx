@@ -1,6 +1,9 @@
 "use client";
 
 import { Text } from "@visx/text";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { useRef, useState } from "react";
 import { theme } from "@/app/config/theme";
 import { tungstenSemiBold } from "@/app/fonts";
 import { images, imageSize } from "@/lib/constants";
@@ -18,7 +21,157 @@ type Props = {
 
 export const CarouselTitle = (props: Props) => {
   const { text } = props;
+  const [newText, setNewText] = useState("");
+  const wrapperRef = useRef(null);
   const isClient = useIsClient();
+
+  useGSAP(() => {
+    gsap.fromTo(
+      wrapperRef.current,
+      {
+        autoAlpha: 0,
+      },
+      {
+        delay: theme.animations.carousel.slideDuration / 2,
+        autoAlpha: 1,
+        duration: 1,
+        ease: "power3.inOut",
+      }
+    );
+  }, []);
+
+  useGSAP(() => {
+    if (!isClient && text) return;
+    const durationOut = theme.animations.carousel.slideDuration / 2;
+    const ease = "power4.inOut";
+    const textId = "#carousel__svg-text-clipPath";
+    const textClipId = "#carousel__svg-text";
+
+    gsap
+      .timeline()
+      // SCALE
+      .to([textId, textClipId], {
+        transform: "scale(0.5)",
+        duration: 0.5,
+        ease: "power4.out",
+      })
+      .to([textId, textClipId], {
+        transform: "scale(1)",
+        duration: 0.8,
+        ease: "power4.in",
+      })
+      // DISAPPEAR
+      // TEXT
+      .to(
+        textId + " > :first-child",
+        {
+          attr: {
+            x: "0%",
+          },
+          autoAlpha: 0,
+          duration: durationOut,
+          ease,
+        },
+        "<"
+      )
+      .to(
+        textId + " > :nth-child(2)",
+        {
+          attr: {
+            x: "100%",
+          },
+          autoAlpha: 0,
+          duration: durationOut,
+          ease,
+        },
+        "<"
+      )
+      // CLIP
+      .to(
+        textClipId + " > :first-child",
+        {
+          attr: {
+            x: "0%",
+          },
+          autoAlpha: 0,
+          duration: durationOut,
+          ease,
+        },
+        "<"
+      )
+      .to(
+        textClipId + " > :nth-child(2)",
+        {
+          attr: {
+            x: "100%",
+          },
+          autoAlpha: 0,
+          duration: durationOut,
+          ease,
+        },
+        "<"
+      )
+      .add(() => {
+        setNewText(text);
+      });
+  }, [text]);
+
+  useGSAP(() => {
+    if (!isClient) return;
+    const ease = "power4.inOut";
+    const durationIn = theme.animations.carousel.slideDuration / 1.8;
+    const textId = "#carousel__svg-text-clipPath";
+    const textClipId = "#carousel__svg-text";
+    gsap
+      .timeline()
+      // REAPPEAR
+      // TEXT
+      .to(textId + " > :first-child", {
+        attr: {
+          x,
+        },
+        autoAlpha: 1,
+        duration: durationIn,
+        ease,
+      })
+      .to(
+        textId + " > :nth-child(2)",
+        {
+          attr: {
+            x,
+          },
+          autoAlpha: 1,
+          duration: durationIn,
+          ease,
+        },
+        "<"
+      )
+      // CLIP
+      .to(
+        textClipId + " > :first-child",
+        {
+          attr: {
+            x,
+          },
+          autoAlpha: 1,
+          duration: durationIn,
+          ease,
+        },
+        "<"
+      )
+      .to(
+        textClipId + " > :nth-child(2)",
+        {
+          attr: {
+            x,
+          },
+          autoAlpha: 1,
+          duration: durationIn,
+          ease,
+        },
+        "<"
+      );
+  }, [newText]);
 
   return (
     <svg
@@ -27,10 +180,12 @@ export const CarouselTitle = (props: Props) => {
       height="100%"
       xmlns="http://www.w3.org/2000/svg"
       style={{ pointerEvents: "none", userSelect: "none", zIndex: 10 }}
+      ref={wrapperRef}
     >
       <defs>
         <clipPath id="textClip">
           <Text
+            id="carousel__svg-text-clipPath"
             x={x}
             y={height}
             textAnchor="middle"
@@ -41,10 +196,10 @@ export const CarouselTitle = (props: Props) => {
             fill="black"
             stroke="black"
             strokeWidth="2"
-            style={{ letterSpacing: ls, textTransform: "uppercase" }}
+            style={{ letterSpacing: ls, textTransform: "uppercase", transformOrigin: "center" }}
             width={width}
           >
-            {isClient ? text : ""}
+            {isClient ? newText || images[0].title : ""}
           </Text>
         </clipPath>
       </defs>
@@ -73,13 +228,13 @@ export const CarouselTitle = (props: Props) => {
         lineHeight={lh}
         fontSize={theme.fontSize.huge}
         className={tungstenSemiBold.className}
-        style={{ letterSpacing: ls, textTransform: "uppercase" }}
+        style={{ letterSpacing: ls, textTransform: "uppercase", transformOrigin: "center" }}
         fill="none"
         stroke="white"
         strokeWidth="2"
         width={width}
       >
-        {isClient ? text : ""}
+        {isClient ? newText || images[0].title : ""}
       </Text>
     </svg>
   );

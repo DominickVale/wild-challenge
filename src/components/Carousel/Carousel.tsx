@@ -32,13 +32,13 @@ export const Carousel = () => {
   const pageDimensions = useSize(typeof window !== "undefined" ? document.documentElement : null);
   const { setCursorState } = useCursor();
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
-  const hasAnimatedIn = useRef(true);
+  const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
 
   const [canChange, setCanChange] = useState(true);
   const [text, setText] = useState(images[activeImageIdx].title);
   const carouselPositions = useCarouselPositions(pageDimensions, images, imageSize);
 
-  const onScrollCarousel = useOnScrollCarousel({
+  const onScrollCarouselFn = useOnScrollCarousel({
     canChange,
     setCanChange,
     carouselPositions,
@@ -57,13 +57,13 @@ export const Carousel = () => {
   });
 
   useGSAP(() => {
-    if (hasAnimatedIn.current && carouselPositions.positions?.length >= 5) {
-      onScrollCarousel(0, "down");
-      hasAnimatedIn.current = false;
+    if (!hasAnimatedIn && carouselPositions.positions?.length >= 5) {
+      onScrollCarouselFn(0, "down");
+      setHasAnimatedIn(true);
     }
-  }, [carouselPositions.positions, onScrollCarousel]);
+  }, [carouselPositions.positions, onScrollCarouselFn]);
 
-  const scrollState = useScrollController(images, onScrollCarousel);
+  const scrollState = useScrollController(images, onScrollCarouselFn);
 
   // Background (blurred) images animations
   useGSAP(() => {
@@ -99,9 +99,9 @@ export const Carousel = () => {
     const idx = Number(e.currentTarget.getAttribute("data-idx")) || 0;
     const middleIdx = Math.floor(images.length / 2);
     if (idx < middleIdx) {
-      onScrollCarousel(activeImageIdx - 1, "up");
+      onScrollCarouselFn(activeImageIdx - 1, "up");
     } else if (idx > middleIdx) {
-      onScrollCarousel(activeImageIdx + 1, "down");
+      onScrollCarouselFn(activeImageIdx + 1, "down");
     }
   }
 
@@ -129,15 +129,16 @@ export const Carousel = () => {
       </BGImagesWrapper>
       <TitleSection>
         <CarouselTitle text={text} />
-        <CarouselProgress
-          pageDimensions={pageDimensions}
-          state={{ current: activeImageIdx, total: images.length, direction: scrollState.direction }}
-        />
+        {hasAnimatedIn && (
+          <CarouselProgress
+            pageDimensions={pageDimensions}
+            state={{ current: activeImageIdx, total: images.length, direction: scrollState.direction }}
+          />
+        )}
         <CarouselCTA currentIdx={activeImageIdx} />
       </TitleSection>
     </Container>
   );
 };
 
-const findImageById = (id: string) => images.find((v) => v.id === id);
 const findImageIdxById = (id: string) => images.findIndex((v) => v.id === id);

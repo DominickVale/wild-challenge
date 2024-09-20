@@ -18,7 +18,8 @@ export const ProgressCounterText = styled(P)`
     display: inline-block;
     position: relative;
     width: ${(p) => p.theme.fontSize.small};
-    height: ${(p) => p.theme.fontSize.smallest};
+    height: calc(${(p) => p.theme.fontSize.smallest});
+    transform: translateY(-5%);
     margin: 0;
     padding: 0;
     line-height: 100%;

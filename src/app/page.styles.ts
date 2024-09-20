@@ -1,5 +1,11 @@
 "use client";
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
+
+export const GlobalStyles = createGlobalStyle`
+* {
+ cursor: ${process.env.NEXT_PUBLIC_PRODUCTION === "true" ? "none" : "auto"};
+}
+`;
 
 export const Header = styled.header`
   position: fixed;

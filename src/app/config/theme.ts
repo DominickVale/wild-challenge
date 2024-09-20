@@ -20,7 +20,7 @@ const theme = {
     cursor: {
       progressDuration: 1.5,
       progressEase: "elastic.out(0.2,0.1)",
-      dampenDuration: 0.5,
+      dampenDuration: 0.6,
       dampenEase: "elastic.out(0.2,0.15)",
     },
   },

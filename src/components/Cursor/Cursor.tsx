@@ -45,6 +45,7 @@ type Props = {
 export const CursorProvider = ({ children }: Props) => {
   const progressRef = useRef<SVGCircleElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const innerCursorRef = useRef<HTMLDivElement>(null);
   const lastProgress = useRef<number>(0);
   const [state, setState] = useState<CursorState>({
     current: 0,
@@ -52,12 +53,13 @@ export const CursorProvider = ({ children }: Props) => {
     direction: "down",
   });
 
-  const pos = useElasticCursorAnimation(wrapperRef);
+  const pos = useElasticCursorAnimation(wrapperRef, innerCursorRef);
 
   useCursorProgressAnimation(state, progressRef, lastProgress);
 
   return (
     <CursorContext.Provider value={{ cursorRef: wrapperRef, position: pos, setCursorState: setState }}>
+      <CursorInner ref={innerCursorRef} />
       <CursorWrapper ref={wrapperRef}>
         <CursorInnerWrapper>
           <CursorProgress width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,7 +73,6 @@ export const CursorProvider = ({ children }: Props) => {
               style={{ transformOrigin: "center" }}
             />
           </CursorProgress>
-          <CursorInner />
         </CursorInnerWrapper>
       </CursorWrapper>
       {children}

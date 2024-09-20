@@ -1,5 +1,5 @@
 "use client";
-import Image, { type ImageProps } from "next/image";
+import Image from "next/image";
 import styled from "styled-components";
 import { HeroType } from "../Typography";
 
@@ -15,6 +15,7 @@ export const TitleSection = styled.main`
 
 export const CTASection = styled.section`
   position: absolute;
+  opacity: 0;
 
   display: flex;
   flex-direction: column;

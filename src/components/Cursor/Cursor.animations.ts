@@ -1,7 +1,7 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { CursorState } from "./Cursor";
-import { MutableRefObject, useRef } from "react";
+import { MutableRefObject, useRef, useState } from "react";
 import { theme } from "@/app/config/theme";
 
 /*
@@ -67,12 +67,38 @@ export function useCursorProgressAnimation(
 /*
  * Animates the wrapper in a springy way
  */
-export function useElasticCursorAnimation(elRef: MutableRefObject<HTMLElement | null>) {
+export function useElasticCursorAnimation(
+  elRef: MutableRefObject<HTMLElement | null>,
+  innerRef: MutableRefObject<HTMLElement | null>
+) {
   const truePos = useRef({ x: 1, y: 1 });
+  const animRef = useRef<gsap.core.Tween | null>(null);
+  const [isHoveringLink, setIsHoveringLink] = useState(false);
+
   useGSAP(() => {
-    if (!elRef.current) return;
+    animRef.current?.kill();
+    if (isHoveringLink) {
+      animRef.current = gsap.to(elRef.current, {
+        opacity: 0,
+        scale: 2,
+        duration: 1.5,
+        ease: theme.animations.cursor.progressEase,
+      });
+    } else {
+      animRef.current = gsap.to(elRef.current, {
+        opacity: 1,
+        scale: 1,
+        duration: 0.5,
+        ease: theme.animations.cursor.progressEase,
+      });
+    }
+  }, [isHoveringLink]);
+
+  useGSAP(() => {
+    if (!elRef.current || !innerRef.current) return;
 
     gsap.set(elRef.current, { xPercent: -50, yPercent: -50 });
+    gsap.set(innerRef.current, { xPercent: -50, yPercent: -50 });
 
     const xTo = gsap.quickTo(elRef.current, "x", {
       duration: theme.animations.cursor.dampenDuration,
@@ -83,10 +109,28 @@ export function useElasticCursorAnimation(elRef: MutableRefObject<HTMLElement | 
       ease: theme.animations.cursor.dampenEase,
     });
 
+    const xToInner = gsap.quickTo(innerRef.current, "x", {
+      duration: 0.3,
+      ease: theme.animations.cursor.dampenEase,
+    });
+    const yToInner = gsap.quickTo(innerRef.current, "y", {
+      duration: 0.3,
+      ease: theme.animations.cursor.dampenEase,
+    });
+
     const handleMouseMove = (e: MouseEvent) => {
+      if (!elRef.current || !innerRef.current) return;
       xTo(e.clientX);
       yTo(e.clientY);
+      xToInner(e.clientX);
+      yToInner(e.clientY);
       truePos.current = { x: e.clientX, y: e.clientY };
+
+      if (e.target instanceof HTMLAnchorElement) {
+        setIsHoveringLink(true);
+      } else {
+        setIsHoveringLink(false);
+      }
     };
 
     window.addEventListener("mousemove", handleMouseMove);

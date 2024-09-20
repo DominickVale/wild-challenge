@@ -24,11 +24,17 @@ export const CursorInnerWrapper = styled.div`
 `;
 
 export const CursorInner = styled.div`
-  position: absolute;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  transform-origin: center;
+  z-index: 100;
   width: 4px;
   height: 4px;
   border-radius: 50%;
   background-color: white;
+  mix-blend-mode: exclusion;
 `;
 
 export const CursorProgress = styled.svg`

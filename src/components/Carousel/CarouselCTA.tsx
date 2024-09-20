@@ -16,14 +16,23 @@ type Props = {
 //@todo: fix text changing before animation
 export const CarouselCTA = (props: Props) => {
   const { currentIdx } = props;
-  const sectionRef = useRef(null);
+  const wrapperRef = useRef(null);
   const state = images[currentIdx];
   const isClient = useIsClient();
 
   useGSAP(() => {
+    gsap.to(wrapperRef.current, {
+      delay: theme.animations.carousel.slideDuration,
+      autoAlpha: 1,
+      duration: theme.animations.carousel.slideDuration / 2,
+      ease: "power3.inOut",
+    });
+  }, []);
+
+  useGSAP(() => {
     if (!isClient) return;
     const durationOut = theme.animations.carousel.slideDuration / 3;
-    const durationIn = theme.animations.carousel.slideDuration / 2;
+    const durationIn = theme.animations.carousel.slideDuration / 1.2;
     const ease = "power4.inOut";
     gsap
       .timeline()
@@ -41,7 +50,7 @@ export const CarouselCTA = (props: Props) => {
           duration: durationOut,
           ease,
         },
-        "<+30%"
+        "<+20%"
       )
       // .to(
       //   "#carousel__cta-button",
@@ -63,6 +72,7 @@ export const CarouselCTA = (props: Props) => {
       })
       .to("#carousel__cta > :first-child", {
         x: "0",
+        delay: 1, // we need the CTA to attract the viewer's eye and not compete with the other anims
         autoAlpha: 1,
         duration: durationIn,
         ease,
@@ -90,7 +100,7 @@ export const CarouselCTA = (props: Props) => {
   }, [currentIdx]);
 
   return (
-    <CTASection ref={sectionRef} id="carousel__cta">
+    <CTASection ref={wrapperRef} id="carousel__cta">
       <span id="carousel__cta-details">
         <P>{images[0].author}</P>
         <P>FOR {images[0].client}</P>

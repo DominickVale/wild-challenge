@@ -15,4 +15,5 @@ export const ProgressBarDot = styled.div<ProgressBarDotProps>`
   background-color: ${(p) => (p.$isActive ? "white" : "transparent")};
   border-radius: 0.125rem;
   transition: background-color 0.3s ease-in-out;
+  transition-delay: 0.7s;
 `;

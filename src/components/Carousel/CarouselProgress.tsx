@@ -8,6 +8,7 @@ import { useRef, useState } from "react";
 import { Flex } from "../Flex";
 import { ProgressBarDot } from "../ProgressBar";
 import { ProgressContainer, ProgressCounterText } from "./CarouselProgress.styles";
+import { theme } from "@/app/config/theme";
 
 gsap.registerPlugin(TextPlugin);
 
@@ -24,20 +25,27 @@ export const CarouselProgress = (props: Props) => {
   const { pageDimensions, state } = props;
   const progressContainerRef = useRef(null);
   const [isFirstSpan, setIsFirstSpan] = useState(true);
+  const [isAnimatingIn, setIsAnimatingIn] = useState(false);
 
   useGSAP(() => {
     gsap.to(progressContainerRef.current, {
+      delay: theme.animations.carousel.slideDuration,
       autoAlpha: 1,
       duration: 1,
       ease: "power3.inOut",
+      onStart: () => {
+        setIsAnimatingIn(true);
+      },
     });
   }, []);
 
+  // attach self to bottom of svg title
   useGSAP(() => {
+    console.log(pageDimensions, state);
     const svgTextElement = document.querySelector("#carousel__svg-text");
     if (svgTextElement) {
       const tspans = svgTextElement.querySelectorAll("tspan");
-      if (tspans.length > 1) {
+      if (tspans.length > 0) {
         const lastTspan = tspans[tspans.length - 1];
         const boundingBox = lastTspan.getBoundingClientRect();
 
@@ -47,7 +55,7 @@ export const CarouselProgress = (props: Props) => {
         });
       }
     }
-  }, [pageDimensions]);
+  }, [pageDimensions, isAnimatingIn]);
 
   useGSAP(() => {
     const animateOutSelector = `#carousel__counter span > :nth-child(${isFirstSpan ? 1 : 2})`;
@@ -61,7 +69,8 @@ export const CarouselProgress = (props: Props) => {
       .to(animateOutSelector, {
         y: state.direction === "up" ? -20 : 20,
         autoAlpha: 0,
-        duration: 0.8,
+        duration: 1,
+        ease: "power3.out",
       })
       .to(
         animateInSelector,
@@ -69,6 +78,7 @@ export const CarouselProgress = (props: Props) => {
           y: 0,
           autoAlpha: 1,
           duration: 1,
+          ease: "power3.in",
         },
         "<"
       );
