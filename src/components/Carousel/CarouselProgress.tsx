@@ -48,7 +48,7 @@ export const CarouselProgress = (props: Props) => {
       const svgRect = svgTextElement.ownerSVGElement.getBoundingClientRect();
 
       gsap.set(progressContainerRef.current, {
-        top: `calc((${Math.ceil(svgRect.top + bbox.y + bbox.height)} / 16 * 1rem) - 2rem)`,
+        top: `calc((${Math.ceil(svgRect.top + bbox.y + bbox.height)} / 16 * 1rem) - 2.32rem)`,
         left: 0,
       });
     }
