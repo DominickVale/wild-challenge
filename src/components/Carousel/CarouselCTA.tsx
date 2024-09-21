@@ -31,8 +31,8 @@ export const CarouselCTA = (props: Props) => {
 
   useGSAP(() => {
     if (!isClient) return;
-    const durationOut = theme.animations.carousel.slideDuration / 3;
-    const durationIn = theme.animations.carousel.slideDuration / 1.2;
+    const durationOut = theme.animations.carousel.slideDuration / 5;
+    const durationIn = theme.animations.carousel.slideDuration / 1.5;
     const ease = "power4.inOut";
     gsap
       .timeline()
@@ -72,7 +72,9 @@ export const CarouselCTA = (props: Props) => {
       })
       .to("#carousel__cta > :first-child", {
         x: "0",
-        delay: 1, // we need the CTA to attract the viewer's eye and not compete with the other anims
+        // we need the CTA to attract the viewer's eye and not compete with the other anims
+        // but the animation still needs to fit in the overall carousel slide tl
+        delay: 0.5,
         autoAlpha: 1,
         duration: durationIn,
         ease,

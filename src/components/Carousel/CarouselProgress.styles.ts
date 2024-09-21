@@ -12,22 +12,29 @@ export const ProgressContainer = styled.div`
 `;
 
 export const ProgressCounterText = styled(P)`
-  line-height: ${(p) => p.theme.fontSize.smallest};
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  height: ${(p) => p.theme.fontSize.default};
 
   span {
-    display: inline-block;
     position: relative;
-    width: ${(p) => p.theme.fontSize.small};
-    height: calc(${(p) => p.theme.fontSize.smallest});
-    transform: translateY(-5%);
-    margin: 0;
-    padding: 0;
-    line-height: 100%;
+    width: ${(p) => p.theme.fontSize.default};
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
     & > span {
       position: absolute;
       left: 0;
       top: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
     }
   }
 `;

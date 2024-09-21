@@ -1,30 +1,28 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
-import { useMount, useSize } from "ahooks";
+import { useSize } from "ahooks";
 import gsap from "gsap";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-import { isFirstOrLast } from "@/lib/utils/array";
+import { useState } from "react";
 import { images, imageSize } from "@/lib/constants";
 import { theme } from "@/app/config/theme";
-import { CTA, P } from "../Typography";
+import { useDebouncedOnResize } from "@/lib/hooks/useDebouncedResize";
 import { useCursor } from "../Cursor";
-import { type onScrollControllerCb, useCarouselPositions, useScrollController } from "./Carousel.hooks";
+import { useOnScrollCarousel, useOnCarouselResizeFix } from "./Carousel.animations";
+import { useCarouselPositions, useScrollController } from "./Carousel.hooks";
 import {
   BGImages,
   BGImagesWrapper,
   BlurredImage,
   Container,
-  CTASection,
   SliderImage,
   SliderImagesWrapper,
   TitleSection,
 } from "./Carousel.styles";
+import { CarouselCTA } from "./CarouselCTA";
 import { CarouselProgress } from "./CarouselProgress";
 import { CarouselTitle } from "./CarouselTitle";
-import { CarouselCTA } from "./CarouselCTA";
-import { useOnScrollCarousel } from "./Carousel.animations";
 
 gsap.registerPlugin(useGSAP);
 
@@ -64,6 +62,8 @@ export const Carousel = () => {
   }, [carouselPositions.positions, onScrollCarouselFn]);
 
   const scrollState = useScrollController(images, onScrollCarouselFn);
+
+  useOnCarouselResizeFix(carouselPositions);
 
   // Background (blurred) images animations
   useGSAP(() => {

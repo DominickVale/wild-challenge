@@ -7,7 +7,11 @@ export type CarouselPositions = {
   origin: Vec2;
 };
 
-export function useCarouselPositions(pageDimensions: Size | undefined, arr: unknown[], imageSize: Size): CarouselPositions {
+export function useCarouselPositions(
+  pageDimensions: Size | undefined,
+  arr: unknown[],
+  imageSize: Size
+): CarouselPositions {
   const [positions, setPositions] = useState<Vec2[]>([]);
   const [origin, setOrigin] = useState<Vec2>({ x: 0, y: 0 });
   useEffect(() => {

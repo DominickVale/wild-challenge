@@ -13,6 +13,7 @@ const theme = {
   animations: {
     carousel: {
       slideDuration: 1.5,
+      slideEndOffset: 1.5 / 3,
       slideEase: "power3.inOut",
       backgroundDuration: 2,
       imageSizeOffset: 8,

@@ -6,6 +6,7 @@ import { useGSAP } from "@gsap/react";
 import { Size, Vec2 } from "@/types";
 import { Dispatch, SetStateAction } from "react";
 import gsap from "gsap";
+import { useDebouncedOnResize } from "@/lib/hooks/useDebouncedResize";
 
 type Props = {
   canChange: boolean;
@@ -15,38 +16,44 @@ type Props = {
   onChange(imgId: string, direction: ScrollDirection): void;
 };
 
+/////////
+//
+// Main carousel animation (diagonal slide)
+//
 export function useOnScrollCarousel(props: Props) {
   const { canChange, pageDimensions, carouselPositions, setCanChange, onChange } = props;
   const { positions, origin } = carouselPositions;
 
   const { contextSafe } = useGSAP();
 
+  // Simple parallax
   const parallax = contextSafe((el: HTMLImageElement, direction: ScrollDirection) => {
     const offset = theme.animations.carousel.imageSizeOffset;
-    const dividedOffset = offset / 3
+    const dividedOffset = offset / 3;
     const xMove = direction === "down" ? dividedOffset : -dividedOffset;
     const yMove = direction === "down" ? -dividedOffset : dividedOffset;
 
     gsap.set(el, {
       width: 100 + offset + "%",
       height: 100 + offset + "%",
-      left: -dividedOffset+"%",
-      top: -dividedOffset+"%",
+      left: -dividedOffset + "%",
+      top: -dividedOffset + "%",
     });
-    gsap.timeline()
+    gsap
+      .timeline()
       .to(el, {
         transform: `translate(${xMove}%, ${yMove}%)`,
-        duration: theme.animations.carousel.slideDuration/1.8,
+        duration: theme.animations.carousel.slideDuration / 1.8,
         ease: "power3.inOut",
       })
       .to(el, {
         transform: `translate(0, 0)`,
-        duration: theme.animations.carousel.slideDuration/2,
+        duration: theme.animations.carousel.slideDuration / 2,
         ease: "power3.out",
-      })
+      });
   });
 
-  // Main carousel animation (diagonal slide)
+  // Animate slider
   const updateSlider = contextSafe<onScrollControllerCb>((newScrollIdx, direction) => {
     if (!canChange || !pageDimensions || positions.length < 5) {
       return;
@@ -57,7 +64,9 @@ export function useOnScrollCarousel(props: Props) {
         setCanChange(false);
       },
       onComplete: () => {
-        setCanChange(true);
+        setTimeout(() => {
+          setCanChange(true);
+        }, theme.animations.carousel.slideEndOffset * 1000);
       },
     });
 
@@ -73,11 +82,8 @@ export function useOnScrollCarousel(props: Props) {
 
       const newPosition = positions[newIdx];
       const isCenter = newPosition.x === origin.x;
-      const scaledImageSize = {
-        width: isCenter ? imageSize.width * 2.05 : imageSize.width,
-        height: isCenter ? imageSize.height * 2.05 : imageSize.height,
-      };
-      const maskRectangle = document.querySelector(`#carousel__title .carousel__svg-mask-rect:nth-child(${idx + 2})`);
+      const scaledImageSize = getScaledImageSize(isCenter);
+      const maskRectangle = document.querySelector(`#carousel__title .carousel__svg-mask-rect:nth-of-type(${idx + 1})`);
       const imgEl = el.querySelector("img") as HTMLImageElement;
       parallax(imgEl, direction);
 
@@ -111,12 +117,7 @@ export function useOnScrollCarousel(props: Props) {
         ).to(
           maskRectangle as SVGRectElement,
           {
-            attr: {
-              x: newPosition.x - scaledImageSize.width / 2 - 16,
-              y: newPosition.y - scaledImageSize.height / 2 - 16,
-            },
-            height: isCenter ? imageSize.height * 2.05 : imageSize.height,
-            width: isCenter ? imageSize.width * 2.05 : imageSize.width,
+            ...getNewMaskRecDimensions(newPosition, scaledImageSize, isCenter),
             duration: theme.animations.carousel.slideDuration,
             ease: theme.animations.carousel.slideEase,
           },
@@ -131,4 +132,56 @@ export function useOnScrollCarousel(props: Props) {
     });
   });
   return updateSlider;
+}
+
+//
+// Fired on window resize — recalculates positions in place
+export function useOnCarouselResizeFix(carouselPositions: CarouselPositions) {
+  const { positions, origin } = carouselPositions;
+  const { contextSafe } = useGSAP();
+
+  const fn = contextSafe(() => {
+    if (carouselPositions.positions.length < 5) return;
+    gsap.utils.toArray<HTMLElement>("#slider-images__wrapper > *").forEach((el) => {
+      const idx = Number(el.getAttribute("data-idx"));
+
+      const pos = positions[idx];
+      const isCenter = pos.x === origin.x;
+      const scaledImageSize = getScaledImageSize(isCenter);
+      const maskRectangle = document.querySelector(`#carousel__title .carousel__svg-mask-rect:nth-of-type(${idx + 1})`);
+
+      gsap.set(el, {
+        left: pos.x,
+        top: pos.y,
+        height: scaledImageSize.height,
+        width: scaledImageSize.width,
+      });
+      gsap.set(maskRectangle as SVGRectElement, getNewMaskRecDimensions(pos, scaledImageSize, isCenter));
+    });
+  });
+
+  useDebouncedOnResize(fn);
+}
+
+///////////
+//
+// dry helpers
+//
+function getScaledImageSize(isCenter: boolean) {
+  return {
+    width: isCenter ? imageSize.width * 2.05 : imageSize.width,
+    height: isCenter ? imageSize.height * 2.05 : imageSize.height,
+  };
+}
+
+function getNewMaskRecDimensions(pos: Vec2, scaledImageSize: Size, isCenter: boolean) {
+  return {
+    attr: {
+      x: pos.x - scaledImageSize.width / 2 - 16,
+      y: pos.y - scaledImageSize.height / 2 - 16,
+    },
+    height: isCenter ? imageSize.height * 2.05 : imageSize.height,
+    width: isCenter ? imageSize.width * 2.05 : imageSize.width,
+    autoAlpha: isCenter ? 1 : 0,
+  };
 }

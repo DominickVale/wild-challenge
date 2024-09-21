@@ -21,10 +21,11 @@ type Props = {
   };
 };
 
+// todo fix counter on first render
 export const CarouselProgress = (props: Props) => {
   const { pageDimensions, state } = props;
   const progressContainerRef = useRef(null);
-  const [isFirstSpan, setIsFirstSpan] = useState(true);
+  const [isFirstSpan, setIsFirstSpan] = useState(false);
   const [isAnimatingIn, setIsAnimatingIn] = useState(false);
 
   useGSAP(() => {
@@ -41,19 +42,15 @@ export const CarouselProgress = (props: Props) => {
 
   // attach self to bottom of svg title
   useGSAP(() => {
-    console.log(pageDimensions, state);
-    const svgTextElement = document.querySelector("#carousel__svg-text");
-    if (svgTextElement) {
-      const tspans = svgTextElement.querySelectorAll("tspan");
-      if (tspans.length > 0) {
-        const lastTspan = tspans[tspans.length - 1];
-        const boundingBox = lastTspan.getBoundingClientRect();
+    const svgTextElement = document.querySelector("#carousel__svg-text") as SVGTextElement;
+    if (svgTextElement && svgTextElement.ownerSVGElement) {
+      const bbox = svgTextElement.getBBox();
+      const svgRect = svgTextElement.ownerSVGElement.getBoundingClientRect();
 
-        gsap.set(progressContainerRef.current, {
-          top: `calc((${Math.ceil(boundingBox.bottom)} / 16 * 1rem) - 2rem)`,
-          left: 0,
-        });
-      }
+      gsap.set(progressContainerRef.current, {
+        top: `calc((${Math.ceil(svgRect.top + bbox.y + bbox.height)} / 16 * 1rem) - 2rem)`,
+        left: 0,
+      });
     }
   }, [pageDimensions, isAnimatingIn]);
 
@@ -72,8 +69,9 @@ export const CarouselProgress = (props: Props) => {
         duration: 1,
         ease: "power3.out",
       })
-      .to(
+      .fromTo(
         animateInSelector,
+        { autoAlpha: 0 },
         {
           y: 0,
           autoAlpha: 1,
@@ -87,10 +85,10 @@ export const CarouselProgress = (props: Props) => {
 
   return (
     <ProgressContainer ref={progressContainerRef}>
-      <Flex direction="row" gap="1.5rem" align="flex-end">
+      <Flex direction="row" gap="1.5rem" align="center">
         <ProgressCounterText id="carousel__counter">
           <span>
-            <span>{state.current + 1}</span>
+            <span></span>
             <span></span>
           </span>
           of {state.total}
