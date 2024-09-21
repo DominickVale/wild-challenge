@@ -1,20 +1,14 @@
 import { theme } from "@/app/config/theme";
 import { images, imgScaleDownFactor } from "@/lib/constants";
 import { isFirstOrLast } from "@/lib/utils/array";
-import {
-  CarouselPositions,
-  onScrollControllerCb,
-  recalculateCarouselPositions,
-  ScrollDirection,
-  useCarouselPositions,
-  useScrollController,
-} from "./Carousel.hooks";
+import { CarouselPositions, onScrollControllerCb, ScrollDirection, useScrollController } from "./Carousel.hooks";
 import { useGSAP } from "@gsap/react";
 import { Size, Vec2 } from "@/types";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import gsap from "gsap";
 import { useDebouncedOnResize } from "@/lib/hooks/useDebouncedResize";
 import { getResponsiveImageSize } from "@/lib/utils/size";
+import { recalculateCarouselPositions } from "./Carousel.utils";
 
 type Props = {
   canChange: boolean;
@@ -177,7 +171,7 @@ export function useCarousel(props: Props) {
   useDebouncedOnResize(
     () => {
       const newImageSize = getResponsiveImageSize();
-      const newPositions = recalculatePositions(newImageSize)
+      const newPositions = recalculatePositions(newImageSize);
       setCarouselPositions(newPositions);
       setImageSize(newImageSize);
     },

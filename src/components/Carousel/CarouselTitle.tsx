@@ -13,14 +13,15 @@ import { Size } from "@/types";
 const width = 70;
 const height = "64.4%";
 const x = "50.28%";
-const lh = "20.3%";
-const ls = "0.04em";
+const lh = "0.85em";
+const ls = "0.052em";
 
 type Props = {
   text: string;
   imageSize: Size;
 };
 
+// todo fix height to ~55% on mobile
 export const CarouselTitle = (props: Props) => {
   const { text, imageSize } = props;
   const [newText, setNewText] = useState("");
@@ -181,7 +182,7 @@ export const CarouselTitle = (props: Props) => {
       width="100%"
       height="100%"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ pointerEvents: "none", userSelect: "none", zIndex: 10 }}
+      style={{ pointerEvents: "none", userSelect: "none", zIndex: 10,  }}
       ref={wrapperRef}
     >
       <defs>

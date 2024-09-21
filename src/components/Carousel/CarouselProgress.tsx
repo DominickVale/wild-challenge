@@ -3,7 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { TextPlugin } from "gsap/all";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { theme } from "@/app/config/theme";
 import { useDebouncedWindowSize } from "@/lib/hooks/useDebouncedResize";
 import { Flex } from "../Flex";
@@ -20,6 +20,7 @@ type Props = {
   };
 };
 
+const L_BREAKPOINT = 1400;
 // todo fix counter on first render
 export const CarouselProgress = (props: Props) => {
   const { state } = props;
@@ -41,14 +42,14 @@ export const CarouselProgress = (props: Props) => {
   }, []);
 
   // attach self to bottom of svg title
-  useGSAP(() => {
+  useEffect(() => {
     const svgTextElement = document.querySelector("#carousel__svg-text") as SVGTextElement;
-    if (svgTextElement && svgTextElement.ownerSVGElement) {
+    if (svgTextElement && svgTextElement.ownerSVGElement && windowSize?.width) {
       const bbox = svgTextElement.getBBox();
-      const svgRect = svgTextElement.ownerSVGElement.getBoundingClientRect();
 
+      const heightOffset = Math.max(L_BREAKPOINT - windowSize.width, 0) * 0.04;
       gsap.set(progressContainerRef.current, {
-        top: `calc((${Math.ceil(svgRect.top + bbox.y + bbox.height)} / 16 * 1rem) - 2.32rem)`,
+        top: `calc(${bbox.y + bbox.height + heightOffset}px - 1.1rem)`,
         left: 0,
       });
     }

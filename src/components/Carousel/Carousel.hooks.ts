@@ -1,8 +1,4 @@
-import { imgScaleDownFactor } from "@/lib/constants";
-import { useDebouncedOnResize } from "@/lib/hooks/useDebouncedResize";
-import { getResponsiveImageSize } from "@/lib/utils/size";
-import { Size, Vec2 } from "@/types";
-import { useGSAP } from "@gsap/react";
+import { Vec2 } from "@/types";
 import { useDebounceFn } from "ahooks";
 import { useEffect, useState } from "react";
 
@@ -10,63 +6,6 @@ export type CarouselPositions = {
   positions: Vec2[];
   origin: Vec2;
 };
-
-export function recalculateCarouselPositions(arr: unknown[], imageSize: Size): CarouselPositions {
-  const size = imageSize.width > 0 ? imageSize : getResponsiveImageSize();
-  const origin = {
-    x: document.documentElement.clientWidth / 2,
-    y: document.documentElement.clientHeight / 2,
-  };
-
-  const pattern = {
-    x: origin.x - size.width / imgScaleDownFactor / 2 - 16,
-    y: origin.y - size.height / imgScaleDownFactor / 2 - 16,
-  };
-
-  const positions = arr.map((_, idx) => {
-    const offset = idx - Math.floor(arr.length / 2);
-    return {
-      x: origin.x + offset * pattern.x,
-      y: origin.y - offset * pattern.y,
-    };
-  });
-
-  console.log("new positions: ", positions);
-  return { positions, origin}
-}
-
-export function useCarouselPositions(arr: unknown[], imageSize: Size): CarouselPositions {
-  const [positions, setPositions] = useState<Vec2[]>([]);
-  const [origin, setOrigin] = useState<Vec2>({ x: 0, y: 0 });
-
-  const { contextSafe } = useGSAP();
-
-  const fn = contextSafe(() => {
-    const size = imageSize.width > 0 ? imageSize : getResponsiveImageSize();
-    const origin = {
-      x: document.documentElement.clientWidth / 2,
-      y: document.documentElement.clientHeight / 2,
-    };
-
-    const pattern = {
-      x: origin.x - size.width / imgScaleDownFactor / 2 - 16,
-      y: origin.y - size.height / imgScaleDownFactor / 2 - 16,
-    };
-
-    const positions = arr.map((_, idx) => {
-      const offset = idx - Math.floor(arr.length / 2);
-      return {
-        x: origin.x + offset * pattern.x,
-        y: origin.y - offset * pattern.y,
-      };
-    });
-    setPositions(positions);
-    setOrigin(origin);
-    console.log("new positions: ", positions);
-  });
-
-  return { positions, origin };
-}
 
 /*
  * Scroll Controller
