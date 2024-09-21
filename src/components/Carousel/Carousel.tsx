@@ -1,16 +1,13 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
-import { useSize } from "ahooks";
 import gsap from "gsap";
 import Image from "next/image";
-import { useState } from "react";
-import { images, imageSize } from "@/lib/constants";
+import { useEffect, useState } from "react";
+import { images } from "@/lib/constants";
 import { theme } from "@/app/config/theme";
-import { useDebouncedOnResize } from "@/lib/hooks/useDebouncedResize";
 import { useCursor } from "../Cursor";
-import { useOnScrollCarousel, useOnCarouselResizeFix } from "./Carousel.animations";
-import { useCarouselPositions, useScrollController } from "./Carousel.hooks";
+import { useCarousel } from "./Carousel.animations";
 import {
   BGImages,
   BGImagesWrapper,
@@ -27,25 +24,20 @@ import { CarouselTitle } from "./CarouselTitle";
 gsap.registerPlugin(useGSAP);
 
 export const Carousel = () => {
-  const pageDimensions = useSize(typeof window !== "undefined" ? document.documentElement : null);
-  const { setCursorState } = useCursor();
+  const cursor = useCursor();
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
-  const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
 
   const [canChange, setCanChange] = useState(true);
   const [text, setText] = useState(images[activeImageIdx].title);
-  const carouselPositions = useCarouselPositions(pageDimensions, images, imageSize);
 
-  const onScrollCarouselFn = useOnScrollCarousel({
+  const { scrollState, imageSize, updateCarousel } = useCarousel({
     canChange,
     setCanChange,
-    carouselPositions,
-    pageDimensions,
     onChange: (imgId, direction) => {
       const imgIdx = findImageIdxById(imgId);
-      if (setCursorState && imgIdx >= 0) {
+      if (cursor?.current && imgIdx >= 0) {
         setActiveImageIdx(imgIdx);
-        setCursorState({
+        cursor.current.setState({
           current: imgIdx,
           total: images.length,
           direction: direction,
@@ -53,17 +45,6 @@ export const Carousel = () => {
       }
     },
   });
-
-  useGSAP(() => {
-    if (!hasAnimatedIn && carouselPositions.positions?.length >= 5) {
-      onScrollCarouselFn(0, "down");
-      setHasAnimatedIn(true);
-    }
-  }, [carouselPositions.positions, onScrollCarouselFn]);
-
-  const scrollState = useScrollController(images, onScrollCarouselFn);
-
-  useOnCarouselResizeFix(carouselPositions);
 
   // Background (blurred) images animations
   useGSAP(() => {
@@ -87,8 +68,7 @@ export const Carousel = () => {
     }
   }, [activeImageIdx]);
 
-  //Title & mask animations
-  useGSAP(() => {
+  useEffect(() => {
     const title = images[activeImageIdx]?.title;
     if (title) {
       setText(title);
@@ -99,9 +79,9 @@ export const Carousel = () => {
     const idx = Number(e.currentTarget.getAttribute("data-idx")) || 0;
     const middleIdx = Math.floor(images.length / 2);
     if (idx < middleIdx) {
-      onScrollCarouselFn(activeImageIdx - 1, "up");
+      updateCarousel(activeImageIdx - 1, "up");
     } else if (idx > middleIdx) {
-      onScrollCarouselFn(activeImageIdx + 1, "down");
+      updateCarousel(activeImageIdx + 1, "down");
     }
   }
 
@@ -116,19 +96,14 @@ export const Carousel = () => {
         <SliderImagesWrapper id="slider-images__wrapper">
           {images.map(({ id, url, alt }, idx) => (
             <SliderImage key={id} data-idx={idx} data-img-id={id} onClick={onSliderImageClick}>
-              <Image src={url} height={imageSize.height} width={imageSize.width} objectFit="cover" alt={alt} />
+              <Image src={url} fill objectFit="cover" alt={alt} />
             </SliderImage>
           ))}
         </SliderImagesWrapper>
       </BGImagesWrapper>
       <TitleSection>
-        <CarouselTitle text={text} />
-        {hasAnimatedIn && (
-          <CarouselProgress
-            pageDimensions={pageDimensions}
-            state={{ current: activeImageIdx, total: images.length, direction: scrollState.direction }}
-          />
-        )}
+        <CarouselTitle text={text} imageSize={imageSize} />
+        <CarouselProgress state={{ current: activeImageIdx, total: images.length, direction: scrollState.direction }} />
         <CarouselCTA currentIdx={activeImageIdx} />
       </TitleSection>
     </Container>

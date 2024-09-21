@@ -1,19 +1,18 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
-import { useSize } from "ahooks";
 import gsap from "gsap";
 import { TextPlugin } from "gsap/all";
 import { useRef, useState } from "react";
+import { theme } from "@/app/config/theme";
+import { useDebouncedWindowSize } from "@/lib/hooks/useDebouncedResize";
 import { Flex } from "../Flex";
 import { ProgressBarDot } from "../ProgressBar";
 import { ProgressContainer, ProgressCounterText } from "./CarouselProgress.styles";
-import { theme } from "@/app/config/theme";
 
 gsap.registerPlugin(TextPlugin);
 
 type Props = {
-  pageDimensions: ReturnType<typeof useSize>;
   state: {
     current: number;
     direction: "up" | "down";
@@ -23,10 +22,11 @@ type Props = {
 
 // todo fix counter on first render
 export const CarouselProgress = (props: Props) => {
-  const { pageDimensions, state } = props;
+  const { state } = props;
   const progressContainerRef = useRef(null);
   const [isFirstSpan, setIsFirstSpan] = useState(false);
   const [isAnimatingIn, setIsAnimatingIn] = useState(false);
+  const windowSize = useDebouncedWindowSize();
 
   useGSAP(() => {
     gsap.to(progressContainerRef.current, {
@@ -52,7 +52,7 @@ export const CarouselProgress = (props: Props) => {
         left: 0,
       });
     }
-  }, [pageDimensions, isAnimatingIn]);
+  }, [windowSize, isAnimatingIn]);
 
   useGSAP(() => {
     const animateOutSelector = `#carousel__counter span > :nth-child(${isFirstSpan ? 1 : 2})`;
@@ -88,8 +88,8 @@ export const CarouselProgress = (props: Props) => {
       <Flex direction="row" gap="1.5rem" align="center">
         <ProgressCounterText id="carousel__counter">
           <span>
-            <span></span>
-            <span></span>
+            <span />
+            <span />
           </span>
           of {state.total}
         </ProgressCounterText>

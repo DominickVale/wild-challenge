@@ -49,9 +49,5 @@ export const images = [
   },
 ];
 
-export const imageSize = {
-  height: 680,
-  width: 512,
-};
-
 export const imgScaleDownFactor = 2.05;
+export const imgRatio = 680 / 512;

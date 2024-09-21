@@ -6,8 +6,9 @@ import gsap from "gsap";
 import { useRef, useState } from "react";
 import { theme } from "@/app/config/theme";
 import { tungstenSemiBold } from "@/app/fonts";
-import { images, imageSize, imgScaleDownFactor } from "@/lib/constants";
+import { images, imgScaleDownFactor } from "@/lib/constants";
 import { useIsClient } from "@/lib/hooks/useIsClient";
+import { Size } from "@/types";
 
 const width = 70;
 const height = "64.4%";
@@ -17,10 +18,11 @@ const ls = "0.04em";
 
 type Props = {
   text: string;
+  imageSize: Size;
 };
 
 export const CarouselTitle = (props: Props) => {
-  const { text } = props;
+  const { text, imageSize } = props;
   const [newText, setNewText] = useState("");
   const wrapperRef = useRef(null);
   const isClient = useIsClient();
