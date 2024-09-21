@@ -67,8 +67,8 @@ export const SliderImage = styled.div`
   top: 50vh;
   transform: translate(-50%, -50%);
   transform-origin: center;
-  height: 330px;
-  width: 248px;
+  width: 512px;
+  height: 680px;
   cursor: pointer;
   overflow: hidden;
   border-radius: 10px;

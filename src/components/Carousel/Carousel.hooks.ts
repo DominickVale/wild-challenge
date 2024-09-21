@@ -1,3 +1,4 @@
+import { imgScaleDownFactor } from "@/lib/constants";
 import { Size, Vec2 } from "@/types";
 import { useDebounceFn } from "ahooks";
 import { useEffect, useState } from "react";
@@ -24,8 +25,8 @@ export function useCarouselPositions(
     };
 
     const pattern = {
-      x: origin.x - imageSize.width / 2 - 16,
-      y: origin.y - imageSize.height / 2 - 16,
+      x: origin.x - (imageSize.width / imgScaleDownFactor) / 2 - 16,
+      y: origin.y - (imageSize.height / imgScaleDownFactor) / 2 - 16,
     };
 
     const positions = arr.map((_, idx) => {

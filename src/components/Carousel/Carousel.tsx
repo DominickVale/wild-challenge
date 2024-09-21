@@ -116,13 +116,7 @@ export const Carousel = () => {
         <SliderImagesWrapper id="slider-images__wrapper">
           {images.map(({ id, url, alt }, idx) => (
             <SliderImage key={id} data-idx={idx} data-img-id={id} onClick={onSliderImageClick}>
-              <Image
-                src={url}
-                height={imageSize.height * 2.05}
-                width={imageSize.width * 2.05}
-                objectFit="cover"
-                alt={alt}
-              />
+              <Image src={url} height={imageSize.height} width={imageSize.width} objectFit="cover" alt={alt} />
             </SliderImage>
           ))}
         </SliderImagesWrapper>

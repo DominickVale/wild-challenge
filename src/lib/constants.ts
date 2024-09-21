@@ -50,6 +50,8 @@ export const images = [
 ];
 
 export const imageSize = {
-  height: 330,
-  width: 248,
+  height: 680,
+  width: 512,
 };
+
+export const imgScaleDownFactor = 2.05;

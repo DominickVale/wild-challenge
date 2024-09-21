@@ -1,5 +1,5 @@
 import { theme } from "@/app/config/theme";
-import { images, imageSize } from "@/lib/constants";
+import { images, imageSize, imgScaleDownFactor } from "@/lib/constants";
 import { isFirstOrLast } from "@/lib/utils/array";
 import { CarouselPositions, onScrollControllerCb, ScrollDirection } from "./Carousel.hooks";
 import { useGSAP } from "@gsap/react";
@@ -95,8 +95,8 @@ export function useOnScrollCarousel(props: Props) {
         });
         gsap.set(maskRectangle as SVGRectElement, {
           attr: {
-            x: newPosition.x - imageSize.width / 2,
-            y: newPosition.y - imageSize.height / 2,
+            x: newPosition.x - (imageSize.width / imgScaleDownFactor) / 2,
+            y: newPosition.y - (imageSize.height / imgScaleDownFactor) / 2,
           },
         });
       } else {
@@ -169,8 +169,8 @@ export function useOnCarouselResizeFix(carouselPositions: CarouselPositions) {
 //
 function getScaledImageSize(isCenter: boolean) {
   return {
-    width: isCenter ? imageSize.width * 2.05 : imageSize.width,
-    height: isCenter ? imageSize.height * 2.05 : imageSize.height,
+    width: isCenter ? imageSize.width : imageSize.width / imgScaleDownFactor ,
+    height: isCenter ? imageSize.height : imageSize.height / imgScaleDownFactor ,
   };
 }
 
@@ -180,8 +180,7 @@ function getNewMaskRecDimensions(pos: Vec2, scaledImageSize: Size, isCenter: boo
       x: pos.x - scaledImageSize.width / 2 - 16,
       y: pos.y - scaledImageSize.height / 2 - 16,
     },
-    height: isCenter ? imageSize.height * 2.05 : imageSize.height,
-    width: isCenter ? imageSize.width * 2.05 : imageSize.width,
     autoAlpha: isCenter ? 1 : 0,
+    ...getScaledImageSize(isCenter),
   };
 }

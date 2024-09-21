@@ -6,7 +6,7 @@ import gsap from "gsap";
 import { useRef, useState } from "react";
 import { theme } from "@/app/config/theme";
 import { tungstenSemiBold } from "@/app/fonts";
-import { images, imageSize } from "@/lib/constants";
+import { images, imageSize, imgScaleDownFactor } from "@/lib/constants";
 import { useIsClient } from "@/lib/hooks/useIsClient";
 
 const width = 70;
@@ -210,8 +210,8 @@ export const CarouselTitle = (props: Props) => {
           data-img-id={id}
           data-idx={id}
           className="carousel__svg-mask-rect"
-          width={imageSize.width}
-          height={imageSize.height}
+          width={imageSize.width / imgScaleDownFactor}
+          height={imageSize.height / imgScaleDownFactor}
           x="35%"
           y="12%"
           fill="white"
