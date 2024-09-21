@@ -1,9 +1,10 @@
 "use client";
 import styled, { createGlobalStyle } from "styled-components";
+import { IS_PROD } from "@/lib/constants";
 
 export const GlobalStyles = createGlobalStyle`
 * {
- cursor: ${process.env.NEXT_PUBLIC_PRODUCTION === "true" ? "none" : "auto"};
+ cursor: ${IS_PROD ? "none" : "auto"};
 }
 `;
 
