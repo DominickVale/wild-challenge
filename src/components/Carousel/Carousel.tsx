@@ -78,11 +78,46 @@ export const Carousel = () => {
   function onSliderImageClick(e: React.MouseEvent<HTMLDivElement>) {
     const idx = Number(e.currentTarget.getAttribute("data-idx")) || 0;
     const middleIdx = Math.floor(images.length / 2);
+    gsap
+      .timeline()
+      .to(e.currentTarget, {
+        scale: 0.98,
+        duration: 0.05,
+        ease: "power4.out",
+      })
+      .to(e.currentTarget, {
+        scale: 1,
+        duration: 0.15,
+        ease: "power4.in",
+      });
     if (idx < middleIdx) {
       updateCarousel(activeImageIdx - 1, "up");
     } else if (idx > middleIdx) {
       updateCarousel(activeImageIdx + 1, "down");
     }
+  }
+
+  function onImageHover(target: HTMLElement, isHovering: boolean) {
+    // avoid center image
+    if (Number(target.getAttribute("data-idx")) === Math.floor(images.length / 2)) {
+      return;
+    }
+    gsap
+      .timeline()
+      .to(target, {
+        scale: isHovering ? 1.05 : 1,
+        duration: 0.8,
+        ease: "power4.out",
+      })
+      .to(
+        target,
+        {
+          duration: 0.15,
+          outline: isHovering ? "1px solid white" : "1px solid black",
+          ease: "power4.inOut",
+        },
+        "<"
+      );
   }
 
   return (
@@ -95,7 +130,14 @@ export const Carousel = () => {
         </BGImages>
         <SliderImagesWrapper id="slider-images__wrapper">
           {images.map(({ id, url, alt }, idx) => (
-            <SliderImage key={id} data-idx={idx} data-img-id={id} onClick={onSliderImageClick}>
+            <SliderImage
+              key={id}
+              data-idx={idx}
+              data-img-id={id}
+              onClick={onSliderImageClick}
+              onMouseEnter={(e) => onImageHover(e.currentTarget as HTMLElement, true)}
+              onMouseLeave={(e) => onImageHover(e.currentTarget as HTMLElement, false)}
+            >
               <Image src={url} fill objectFit="cover" alt={alt} />
             </SliderImage>
           ))}

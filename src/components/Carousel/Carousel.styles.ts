@@ -52,6 +52,7 @@ export const BGImages = styled.div`
     width: 100%;
     height: 100%;
     backdrop-filter: blur(100px);
+    -webkit-backdrop-filter: blur(100px);
     transform: translate3d(0, 0, 0);
     background-color: rgba(0, 0, 0, 0.01);
   }
@@ -79,13 +80,6 @@ export const SliderImage = styled.div`
     transform-origin: center;
     left: 0;
     top: 0;
-    transition: transform 0.28s ease-out;
-  }
-  & > img[data-cursor-hover]:hover {
-    transform: scale(1.1) !important;
-  }
-  & > img[data-cursor-hover]:active {
-    transform: scale(0.9) !important;
   }
 `;
 
@@ -108,4 +102,15 @@ export const CarouselTitleText = styled(HeroType)`
   z-index: 10;
   color: transparent;
   -webkit-text-stroke: 2px ${(p) => p.theme.colors.typeLight};
+`;
+
+export const CarouselTitleWrapper = styled.svg`
+  pointer-events: "none";
+  user-select: "none";
+  z-index: 10;
+  @media screen and (max-width: 768px) {
+    & > tspan {
+      y: 40%;
+    }
+  }
 `;

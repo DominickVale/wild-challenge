@@ -166,6 +166,7 @@ function animateSlider(props: AnimateSliderProps) {
           // affects borders and makes life more complicated. TL;DR worth the compromise
           height: scaledImageSize.height,
           width: scaledImageSize.width,
+          outline:  "1px solid black",
           duration: theme.animations.carousel.slideDuration,
           ease: theme.animations.carousel.slideEase,
         },

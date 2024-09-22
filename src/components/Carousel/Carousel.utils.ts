@@ -1,4 +1,4 @@
-import { imgScaleDownFactor } from "@/lib/constants";
+import { images, imgScaleDownFactor } from "@/lib/constants";
 import { getResponsiveImageSize } from "@/lib/utils/size";
 import { Size } from "@/types";
 import { CarouselPositions } from "./Carousel.hooks";
@@ -26,7 +26,6 @@ export function getCarouselPositions(imageSize: Size, arr: unknown[]): CarouselP
   return { positions, origin };
 }
 
-
 export function recalculateCarouselPositions(arr: unknown[], imageSize: Size): CarouselPositions {
   const size = imageSize.width > 0 ? imageSize : getResponsiveImageSize();
   const origin = {
@@ -47,5 +46,5 @@ export function recalculateCarouselPositions(arr: unknown[], imageSize: Size): C
     };
   });
 
-  return { positions, origin}
+  return { positions, origin }
 }

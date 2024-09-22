@@ -3,12 +3,14 @@
 import { Text } from "@visx/text";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { theme } from "@/app/config/theme";
 import { tungstenSemiBold } from "@/app/fonts";
 import { images, imgScaleDownFactor } from "@/lib/constants";
 import { useIsClient } from "@/lib/hooks/useIsClient";
 import { Size } from "@/types";
+import { CarouselTitleWrapper } from "./Carousel.styles";
+import { useDebouncedWindowSize } from "@/lib/hooks/useDebouncedResize";
 
 const width = 70;
 const height = "64.4%";
@@ -21,6 +23,7 @@ type Props = {
   imageSize: Size;
 };
 
+const L_BREAKPOINT = 750;
 // todo fix height to ~55% on mobile
 export const CarouselTitle = (props: Props) => {
   const { text, imageSize } = props;
@@ -45,7 +48,7 @@ export const CarouselTitle = (props: Props) => {
 
   useGSAP(() => {
     if (!isClient && text) return;
-    const durationOut = theme.animations.carousel.slideDuration / 2;
+    const durationOut = theme.animations.carousel.slideDuration / 4;
     const ease = "power4.inOut";
     const textId = "#carousel__svg-text-clipPath";
     const textClipId = "#carousel__svg-text";
@@ -55,7 +58,7 @@ export const CarouselTitle = (props: Props) => {
       // SCALE
       .to([textId, textClipId], {
         transform: "scale(0.5)",
-        duration: 0.5,
+        duration: durationOut,
         ease: "power4.out",
       })
       .to([textId, textClipId], {
@@ -177,12 +180,11 @@ export const CarouselTitle = (props: Props) => {
   }, [newText]);
 
   return (
-    <svg
+    <CarouselTitleWrapper
       id="carousel__title"
       width="100%"
       height="100%"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ pointerEvents: "none", userSelect: "none", zIndex: 10,  }}
       ref={wrapperRef}
     >
       <defs>
@@ -239,6 +241,6 @@ export const CarouselTitle = (props: Props) => {
       >
         {isClient ? newText || images[0].title : ""}
       </Text>
-    </svg>
+    </CarouselTitleWrapper>
   );
 };
