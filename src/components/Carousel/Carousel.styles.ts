@@ -79,6 +79,13 @@ export const SliderImage = styled.div`
     transform-origin: center;
     left: 0;
     top: 0;
+    transition: transform 0.28s ease-out;
+  }
+  & > img[data-cursor-hover]:hover {
+    transform: scale(1.1) !important;
+  }
+  & > img[data-cursor-hover]:active {
+    transform: scale(0.9) !important;
   }
 `;
 

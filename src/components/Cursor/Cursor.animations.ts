@@ -69,22 +69,33 @@ export function useCursorProgressAnimation(
  */
 export function useElasticCursorAnimation(
   elRef: MutableRefObject<HTMLElement | null>,
-  innerRef: MutableRefObject<HTMLElement | null>
+  innerRef: MutableRefObject<HTMLElement | null>,
+  textRef: MutableRefObject<HTMLElement | null>
 ) {
   const truePos = useRef({ x: 1, y: 1 });
-  const animRef = useRef<gsap.core.Tween | null>(null);
-  const [isHoveringLink, setIsHoveringLink] = useState(false);
+  const animRef = useRef<gsap.core.Tween | gsap.core.Timeline | null>(null);
+  const [hoveringElement, setIsHoveringElement] = useState<HTMLElement | null>(null);
 
   useGSAP(() => {
     animRef.current?.kill();
-    if (isHoveringLink) {
-      animRef.current = gsap.to(elRef.current, {
-        opacity: 0,
-        scale: 2,
-        duration: 1.5,
-        ease: theme.animations.cursor.progressEase,
-      });
+    if (hoveringElement) {
+      const text = hoveringElement.getAttribute("data-cursor-text") || "";
+      gsap.set(textRef.current, { text });
+      animRef.current = gsap
+        .timeline()
+        .to(elRef.current, {
+          opacity: 0,
+          scale: 2,
+          duration: 1.5,
+          ease: theme.animations.cursor.progressEase,
+        })
+        .to(textRef.current, {
+          autoAlpha: 1,
+          duration: 1,
+          ease: theme.animations.cursor.progressEase,
+        });
     } else {
+      gsap.set(textRef.current, { text: "" });
       animRef.current = gsap.to(elRef.current, {
         opacity: 1,
         scale: 1,
@@ -92,7 +103,7 @@ export function useElasticCursorAnimation(
         ease: theme.animations.cursor.progressEase,
       });
     }
-  }, [isHoveringLink]);
+  }, [hoveringElement]);
 
   useGSAP(() => {
     if (!elRef.current || !innerRef.current) return;
@@ -126,10 +137,12 @@ export function useElasticCursorAnimation(
       yToInner(e.clientY);
       truePos.current = { x: e.clientX, y: e.clientY };
 
-      if (e.target instanceof HTMLAnchorElement) {
-        setIsHoveringLink(true);
+      const target = e.target as HTMLElement;
+      if (!target) return;
+      if (target.getAttribute("data-cursor-hover")) {
+        setIsHoveringElement(target);
       } else {
-        setIsHoveringLink(false);
+        setIsHoveringElement(null);
       }
     };
 

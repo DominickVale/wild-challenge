@@ -108,7 +108,7 @@ export const CarouselCTA = (props: Props) => {
         <P>FOR {images[0].client}</P>
       </span>
       <P id="carousel__cta-date">{images[0].date}</P>
-      <CTA href="/" id="carousel__cta-button">
+      <CTA href="/" id="carousel__cta-button" data-cursor-hover>
         HAVE A LOOK
       </CTA>
     </CTASection>

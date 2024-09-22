@@ -9,6 +9,7 @@ export const ProgressContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: none;
 `;
 
 export const ProgressCounterText = styled(P)`

@@ -4,6 +4,7 @@ import React, { forwardRef, useRef, useState, useImperativeHandle, createContext
 import { useCursorProgressAnimation, useElasticCursorAnimation } from "./Cursor.animations";
 import { CursorInner, CursorInnerWrapper, CursorProgress, CursorWrapper } from "./Cursor.styles";
 import { Vec2 } from "@/types";
+import { P } from "../Typography";
 
 export type CursorState = {
   current: number;
@@ -21,12 +22,13 @@ export type CursorRef = {
   setState: (newState: Partial<CursorState>) => void;
 };
 
-export const Cursor = forwardRef<CursorRef, Props>(({ children }, ref) => {
+export const Cursor = forwardRef<CursorRef, Props>((props, ref) => {
   const progressRef = useRef<SVGCircleElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const innerCursorRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
   const lastProgress = useRef<number>(0);
-  const pos = useElasticCursorAnimation(wrapperRef, innerCursorRef);
+  const pos = useElasticCursorAnimation(wrapperRef, innerCursorRef, textRef);
   const [state, setState] = useState<CursorState>({
     current: 0,
     total: 0,
@@ -43,7 +45,9 @@ export const Cursor = forwardRef<CursorRef, Props>(({ children }, ref) => {
 
   return (
     <>
-      <CursorInner ref={innerCursorRef} />
+      <CursorInner ref={innerCursorRef}>
+        <P ref={textRef}></P>
+      </CursorInner>
       <CursorWrapper ref={wrapperRef}>
         <CursorInnerWrapper>
           <CursorProgress width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -59,7 +63,6 @@ export const Cursor = forwardRef<CursorRef, Props>(({ children }, ref) => {
           </CursorProgress>
         </CursorInnerWrapper>
       </CursorWrapper>
-      {children}
     </>
   );
 });

@@ -34,7 +34,15 @@ export const CursorInner = styled.div`
   height: 4px;
   border-radius: 50%;
   background-color: white;
-  mix-blend-mode: exclusion;
+
+  p {
+    position: absolute;
+    left: 50%;
+    top: 1rem;
+    transform: translate(-50%, -50%);
+    transform-origin: center;
+    font-size: ${(p) => p.theme.fontSize.smallest};
+  }
 `;
 
 export const CursorProgress = styled.svg`
