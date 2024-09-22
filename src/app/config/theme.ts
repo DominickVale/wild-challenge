@@ -8,7 +8,7 @@ const theme = {
     smallest: "0.5rem",
     small: "0.625rem",
     default: "1rem",
-    huge: "clamp(2rem, 13.35vw, 50rem",
+    huge: "clamp(5.2rem, 13.35vw, 50rem",
   },
   animations: {
     carousel: {

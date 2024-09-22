@@ -263,8 +263,8 @@ function getScaledImageSize(imageSize: Size, isCenter: boolean) {
 function getNewMaskRecDimensions(pos: Vec2, imageSize: Size, scaledImageSize: Size, isCenter: boolean) {
   return {
     attr: {
-      x: pos.x - scaledImageSize.width / 2 - 16,
-      y: pos.y - scaledImageSize.height / 2 - 16,
+      x: pos.x - scaledImageSize.width / 2,
+      y: pos.y - scaledImageSize.height / 2,
     },
     autoAlpha: isCenter ? 1 : 0,
     ...getScaledImageSize(imageSize, isCenter),

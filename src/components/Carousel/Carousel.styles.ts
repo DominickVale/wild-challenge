@@ -29,6 +29,13 @@ export const CTASection = styled.section`
   & > p:nth-child(2) {
     align-self: flex-end;
   }
+  @media screen and (max-width: 768px) {
+    position: fixed;
+    bottom: 3rem;
+    right: unset;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 `;
 
 export const BGImagesWrapper = styled.div`
@@ -105,8 +112,13 @@ export const CarouselTitleText = styled(HeroType)`
 `;
 
 export const CarouselTitleWrapper = styled.svg`
-  pointer-events: "none";
-  user-select: "none";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
   z-index: 10;
   @media screen and (max-width: 768px) {
     & > tspan {

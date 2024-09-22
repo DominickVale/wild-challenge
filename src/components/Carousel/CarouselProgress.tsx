@@ -49,7 +49,7 @@ export const CarouselProgress = (props: Props) => {
 
       const heightOffset = Math.max(L_BREAKPOINT - windowSize.width, 0) * 0.04;
       gsap.set(progressContainerRef.current, {
-        top: `calc(${bbox.y + bbox.height + heightOffset}px - 1.1rem)`,
+        top: `calc(${bbox.y + bbox.height + heightOffset}px - 2.1rem)`,
         left: 0,
       });
     }

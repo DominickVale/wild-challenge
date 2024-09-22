@@ -3,17 +3,16 @@
 import { Text } from "@visx/text";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { theme } from "@/app/config/theme";
 import { tungstenSemiBold } from "@/app/fonts";
 import { images, imgScaleDownFactor } from "@/lib/constants";
 import { useIsClient } from "@/lib/hooks/useIsClient";
 import { Size } from "@/types";
 import { CarouselTitleWrapper } from "./Carousel.styles";
-import { useDebouncedWindowSize } from "@/lib/hooks/useDebouncedResize";
 
 const width = 70;
-const height = "64.4%";
+const height = "45.4%";
 const x = "50.28%";
 const lh = "0.85em";
 const ls = "0.052em";
@@ -200,7 +199,8 @@ export const CarouselTitle = (props: Props) => {
             className={tungstenSemiBold.className}
             fill="black"
             stroke="black"
-            strokeWidth="2"
+            strokeWidth="1"
+            verticalAnchor="middle"
             style={{ letterSpacing: ls, textTransform: "uppercase", transformOrigin: "center" }}
             width={width}
           >
@@ -231,12 +231,13 @@ export const CarouselTitle = (props: Props) => {
         textAnchor="middle"
         dominantBaseline="middle"
         lineHeight={lh}
+        verticalAnchor="middle"
         fontSize={theme.fontSize.huge}
         className={tungstenSemiBold.className}
         style={{ letterSpacing: ls, textTransform: "uppercase", transformOrigin: "center" }}
         fill="none"
         stroke="white"
-        strokeWidth="2"
+        strokeWidth="1"
         width={width}
       >
         {isClient ? newText || images[0].title : ""}
@@ -244,3 +245,4 @@ export const CarouselTitle = (props: Props) => {
     </CarouselTitleWrapper>
   );
 };
+
