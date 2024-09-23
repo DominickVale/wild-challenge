@@ -23,18 +23,15 @@ export const CTASection = styled.section`
   gap: 1rem;
 
   position: absolute;
-  right: 9.688rem;
-  bottom: 5.813rem;
+  right: 9.7%;
+  bottom: 10.3%;
 
   & > p:nth-child(2) {
     align-self: flex-end;
   }
   @media screen and (max-width: 768px) {
-    position: fixed;
-    bottom: 3rem;
-    right: unset;
-    left: 50%;
-    transform: translateX(-50%);
+    right: ${(p) => p.theme.padding};
+    bottom: 6%;
   }
 `;
 
@@ -125,9 +122,4 @@ export const CarouselTitleWrapper = styled.svg`
   pointer-events: none;
   user-select: none;
   z-index: 10;
-  @media screen and (max-width: 768px) {
-    & > tspan {
-      y: 40%;
-    }
-  }
 `;

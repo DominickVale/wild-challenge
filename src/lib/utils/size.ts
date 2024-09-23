@@ -25,6 +25,14 @@ export function getResponsiveImageSize() {
   const newWidth = Math.min(widthBasedOnVW, widthBasedOnVH);
   const newHeight = newWidth * imgRatio;
 
+  if (document.documentElement.clientWidth < 768) {
+    const scale = availableHeight / availableWidth;
+    return {
+      width: newWidth * scale,
+      height: newHeight * scale,
+    };
+  }
+
   return {
     width: newWidth,
     height: newHeight,
