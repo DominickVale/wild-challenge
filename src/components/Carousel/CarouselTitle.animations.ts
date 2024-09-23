@@ -15,7 +15,6 @@ export function useTitleChangeAnimation(
   const { x } = initialDimensions;
 
   useGSAP(() => {
-    console.log("new text,");
     if (!isClient || newText === text) return;
     const durationOut = theme.animations.carousel.slideDuration / 4;
     const ease = "power4.inOut";

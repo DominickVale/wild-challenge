@@ -1,14 +1,13 @@
 "use client";
 
-import { Text } from "@visx/text";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { useRef, useState } from "react";
 import { theme } from "@/app/config/theme";
 import { tungstenSemiBold } from "@/app/fonts";
 import { images, imgScaleDownFactor } from "@/lib/constants";
+import { useDebouncedWindowSize } from "@/lib/hooks/useDebouncedResize";
 import { useIsClient } from "@/lib/hooks/useIsClient";
 import { Size } from "@/types";
+import { Text } from "@visx/text";
+import { useEffect, useRef, useState } from "react";
 import { CarouselTitleWrapper } from "./Carousel.styles";
 import { useTitleChangeAnimation } from "./CarouselTitle.animations";
 
@@ -23,9 +22,33 @@ type Props = {
   imageSize: Size;
 };
 
-const L_BREAKPOINT = 750;
-// todo fix height to ~55% on mobile
+// I couldn't figure out why the SVG text broke when resizing, so i just hacked this together.
+// Wraps around the actual Title, remounting it on resize
 export const CarouselTitle = (props: Props) => {
+  const [key, setKey] = useState(0);
+  const wSize = useDebouncedWindowSize();
+  const oldWSize = useRef(
+    typeof window === "undefined"
+      ? null
+      : {
+          height: document.documentElement.clientHeight,
+          width: document.documentElement.clientWidth,
+        }
+  );
+
+  useEffect(() => {
+    if (wSize && oldWSize.current) {
+      if (wSize.width !== oldWSize.current.width || wSize.height !== oldWSize.current.height) {
+        setKey((prevKey) => prevKey + 1);
+        oldWSize.current = { ...wSize };
+      }
+    }
+  }, [wSize]);
+
+  return <CarouselTitleInner key={key} {...props} />;
+};
+
+const CarouselTitleInner = (props: Props) => {
   const { text, imageSize } = props;
 
   const wrapperRef = useRef(null);
