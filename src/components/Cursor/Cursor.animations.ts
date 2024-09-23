@@ -77,6 +77,9 @@ export function useElasticCursorAnimation(
   const [hoveringElement, setIsHoveringElement] = useState<HTMLElement | null>(null);
 
   useGSAP(() => {
+    if(truePos.current.x <= 1 && truePos.current.y <= 1) {
+      return
+    }
     animRef.current?.kill();
     if (hoveringElement) {
       const text = hoveringElement.getAttribute("data-cursor-text") || "";
@@ -139,6 +142,10 @@ export function useElasticCursorAnimation(
 
       const target = e.target as HTMLElement;
       if (!target) return;
+      gsap.to([elRef.current, innerRef.current], {
+        autoAlpha: 1,
+        duration: 0.3,
+      });
       if (target.getAttribute("data-cursor-hover")) {
         setIsHoveringElement(target);
       } else {

@@ -120,6 +120,16 @@ export const Carousel = () => {
       );
   }
 
+  useGSAP(() => {
+    gsap.utils.toArray("#slider-images__wrapper > *").forEach((el) => {
+      gsap.to(el as HTMLElement, {
+        scale: 1,
+        duration: 1,
+        ease: "power4.inOut",
+      });
+    });
+  }, []);
+
   return (
     <Container id="carousel">
       <BGImagesWrapper>
@@ -134,6 +144,7 @@ export const Carousel = () => {
               key={id}
               data-idx={idx}
               data-img-id={id}
+              $isCenter={idx === 0}
               onClick={onSliderImageClick}
               onMouseEnter={(e) => onImageHover(e.currentTarget as HTMLElement, true)}
               onMouseLeave={(e) => onImageHover(e.currentTarget as HTMLElement, false)}

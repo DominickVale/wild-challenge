@@ -69,11 +69,14 @@ export const BlurredImage = styled(Image)`
   object-fit: cover;
 `;
 
-export const SliderImage = styled.div`
+type SliderImageProps = {
+  $isCenter?: boolean;
+};
+export const SliderImage = styled.div<SliderImageProps>`
   position: fixed;
   left: 50vw;
   top: 50vh;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.5);
   transform-origin: center;
   width: 512px;
   height: 680px;
@@ -81,7 +84,7 @@ export const SliderImage = styled.div`
   overflow: hidden;
   border-radius: 10px;
   outline: 1px solid black;
-
+  z-index: ${(p) => (p.$isCenter ? 10 : 1)};
   & > img {
     position: fixed;
     transform-origin: center;
@@ -112,6 +115,8 @@ export const CarouselTitleText = styled(HeroType)`
 `;
 
 export const CarouselTitleWrapper = styled.svg`
+  opacity: 0;
+
   position: fixed;
   top: 0;
   left: 0;

@@ -2,6 +2,7 @@
 import styled from "styled-components";
 
 export const CursorWrapper = styled.div`
+  opacity: 0;
   position: fixed;
   top: 0;
   left: 0;
@@ -24,6 +25,7 @@ export const CursorInnerWrapper = styled.div`
 `;
 
 export const CursorInner = styled.div`
+  opacity: 0;
   position: fixed;
   top: 0;
   left: 0;

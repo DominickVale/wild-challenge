@@ -202,11 +202,13 @@ function createSliderSetter(el: HTMLElement, idx: number, imageSize: Size, pos: 
   updateImageDataCursor(img, pos, origin, isCenter)
   return gsap
     .timeline()
-    .set(el, {
+    .to(el, {
       left: pos.x,
       top: pos.y,
       height: scaledImageSize.height,
       width: scaledImageSize.width,
+      duration: 1.5,
+      ease: "power4.out"
     })
     .set(maskRectangle as SVGRectElement, getNewMaskRecDimensions(pos, size, scaledImageSize, isCenter));
 }
@@ -214,11 +216,13 @@ function createSliderSetter(el: HTMLElement, idx: number, imageSize: Size, pos: 
 function setupParallax(el: HTMLElement) {
   const offset = theme.animations.carousel.imageSizeOffset;
   const dividedOffset = offset / 3;
-  gsap.set(el, {
+  gsap.to(el, {
     width: 100 + offset + "%",
     height: 100 + offset + "%",
     left: -dividedOffset + "%",
     top: -dividedOffset + "%",
+    duration: 0.35,
+    ease: "power3.out"
   });
 }
 
