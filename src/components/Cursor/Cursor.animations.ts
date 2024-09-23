@@ -1,8 +1,9 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { CursorState } from "./Cursor";
-import { MutableRefObject, useRef, useState } from "react";
+import { MutableRefObject, useCallback, useRef, useState } from "react";
 import { theme } from "@/app/config/theme";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 /*
  * Animates the progress of the animation bar based on current idx
@@ -75,10 +76,13 @@ export function useElasticCursorAnimation(
   const truePos = useRef({ x: 1, y: 1 });
   const animRef = useRef<gsap.core.Tween | gsap.core.Timeline | null>(null);
   const [hoveringElement, setIsHoveringElement] = useState<HTMLElement | null>(null);
+  const firstInteraction = useRef(true);
+  const isTouch = useMediaQuery("(pointer:coarse)");
 
+  console.log("IS TOUCH", isTouch);
   useGSAP(() => {
-    if(truePos.current.x <= 1 && truePos.current.y <= 1) {
-      return
+    if ((truePos.current.x <= 1 && truePos.current.y <= 1) || isTouch) {
+      return;
     }
     animRef.current?.kill();
     if (hoveringElement) {
@@ -106,7 +110,7 @@ export function useElasticCursorAnimation(
         ease: theme.animations.cursor.progressEase,
       });
     }
-  }, [hoveringElement]);
+  }, [hoveringElement, isTouch]);
 
   useGSAP(() => {
     if (!elRef.current || !innerRef.current) return;
@@ -134,6 +138,11 @@ export function useElasticCursorAnimation(
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!elRef.current || !innerRef.current) return;
+      if (firstInteraction.current) {
+        gsap.set([elRef.current, innerRef.current], { autoAlpha: 1 });
+        firstInteraction.current = false;
+      }
+
       xTo(e.clientX);
       yTo(e.clientY);
       xToInner(e.clientX);
@@ -142,10 +151,6 @@ export function useElasticCursorAnimation(
 
       const target = e.target as HTMLElement;
       if (!target) return;
-      gsap.to([elRef.current, innerRef.current], {
-        autoAlpha: 1,
-        duration: 0.3,
-      });
       if (target.getAttribute("data-cursor-hover")) {
         setIsHoveringElement(target);
       } else {
@@ -155,10 +160,18 @@ export function useElasticCursorAnimation(
 
     window.addEventListener("mousemove", handleMouseMove);
 
-    return () => {
+    const removeListener = () => {
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+
+    if (isTouch) {
+      gsap.set([elRef.current, innerRef.current], {
+        autoAlpha: 0,
+      });
+      removeListener();
+    }
+    return removeListener;
+  }, [isTouch]);
 
   return truePos;
 }
