@@ -13,3 +13,13 @@ export const CarouselTitleWrapper = styled.svg`
   user-select: none;
   z-index: 10;
 `;
+
+export const SrOnlyH1 = styled.h1`
+  font-size: ${(p) => p.theme.fontSize.huge};
+  position: fixed;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+  z-index: 100;
+`;

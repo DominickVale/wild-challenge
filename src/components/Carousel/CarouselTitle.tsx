@@ -8,7 +8,7 @@ import { useIsClient } from "@/lib/hooks/useIsClient";
 import { Size } from "@/types";
 import { Text } from "@visx/text";
 import { useEffect, useRef, useState } from "react";
-import { CarouselTitleWrapper } from "./CarouselTitle.styles";
+import { CarouselTitleWrapper, SrOnlyH1 } from "./CarouselTitle.styles";
 import { useTitleChangeAnimation } from "./CarouselTitle.animations";
 
 const WIDTH = 70;
@@ -56,70 +56,78 @@ const CarouselTitleInner = (props: Props) => {
 
   const [newText] = useTitleChangeAnimation(isClient, text, imageSize, { x: X, height: HEIGHT }, wrapperRef);
 
+  const textToRender = isClient ? newText || images[0].title : "";
+
   return (
-    <CarouselTitleWrapper
-      id="carousel__title"
-      width="100%"
-      height="100%"
-      xmlns="http://www.w3.org/2000/svg"
-      ref={wrapperRef}
-    >
-      <defs>
-        <clipPath id="textClip">
-          <Text
-            id="carousel__svg-text-clipPath"
-            x={X}
-            y={HEIGHT}
-            textAnchor="middle"
-            lineHeight={LH}
-            dominantBaseline="middle"
-            fontSize={theme.fontSize.huge}
-            className={tungstenSemiBold.className}
-            fill="black"
-            stroke="black"
-            strokeWidth="1"
-            verticalAnchor="middle"
-            style={{ letterSpacing: LS, textTransform: "uppercase", transformOrigin: "center" }}
-            width={WIDTH}
-          >
-            {isClient ? newText || images[0].title : ""}
-          </Text>
-        </clipPath>
-      </defs>
-
-      {images.map(({ id }) => (
-        <rect
-          key={id}
-          data-img-id={id}
-          data-idx={id}
-          className="carousel__svg-mask-rect"
-          width={imageSize.width / imgScaleDownFactor}
-          height={imageSize.height / imgScaleDownFactor}
-          x="35%"
-          y="12%"
-          fill="white"
-          clipPath="url(#textClip)"
-        />
-      ))}
-
-      <Text
-        id="carousel__svg-text"
-        x={X}
-        y={HEIGHT}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        lineHeight={LH}
-        verticalAnchor="middle"
-        fontSize={theme.fontSize.huge}
-        className={tungstenSemiBold.className}
-        style={{ letterSpacing: LS, textTransform: "uppercase", transformOrigin: "center" }}
-        fill="none"
-        stroke="white"
-        strokeWidth="1"
-        width={WIDTH}
+    <>
+      <SrOnlyH1 className="sr-only" aria-live="polite" aria-atomic="false" aria-label="Work title">
+        {textToRender}
+      </SrOnlyH1>
+      <CarouselTitleWrapper
+        id="carousel__title"
+        width="100%"
+        height="100%"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+        ref={wrapperRef}
       >
-        {isClient ? newText || images[0].title : ""}
-      </Text>
-    </CarouselTitleWrapper>
+        <defs>
+          <clipPath id="textClip">
+            <Text
+              id="carousel__svg-text-clipPath"
+              x={X}
+              y={HEIGHT}
+              textAnchor="middle"
+              lineHeight={LH}
+              dominantBaseline="middle"
+              fontSize={theme.fontSize.huge}
+              className={tungstenSemiBold.className}
+              fill="black"
+              stroke="black"
+              strokeWidth="1"
+              verticalAnchor="middle"
+              style={{ letterSpacing: LS, textTransform: "uppercase", transformOrigin: "center" }}
+              width={WIDTH}
+            >
+              {textToRender}
+            </Text>
+          </clipPath>
+        </defs>
+
+        {images.map(({ id }) => (
+          <rect
+            key={id}
+            data-img-id={id}
+            data-idx={id}
+            className="carousel__svg-mask-rect"
+            width={imageSize.width / imgScaleDownFactor}
+            height={imageSize.height / imgScaleDownFactor}
+            x="35%"
+            y="12%"
+            fill="white"
+            clipPath="url(#textClip)"
+          />
+        ))}
+
+        <Text
+          id="carousel__svg-text"
+          x={X}
+          y={HEIGHT}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          lineHeight={LH}
+          verticalAnchor="middle"
+          fontSize={theme.fontSize.huge}
+          className={tungstenSemiBold.className}
+          style={{ letterSpacing: LS, textTransform: "uppercase", transformOrigin: "center" }}
+          fill="none"
+          stroke="white"
+          strokeWidth="1"
+          width={WIDTH}
+        >
+          {textToRender}
+        </Text>
+      </CarouselTitleWrapper>
+    </>
   );
 };

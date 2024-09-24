@@ -25,7 +25,7 @@ export const CTASection = styled.section`
   right: 9.7%;
   bottom: 10.3%;
 
-  & > p:nth-child(2) {
+  #carousel__cta-details > p:nth-child(2) {
     align-self: flex-end;
   }
   @media screen and (max-width: 768px) {

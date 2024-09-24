@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { images } from "@/lib/constants";
 import { useCursor } from "../Cursor";
+import { Flex } from "../Flex";
 import { useCarousel } from "./animations/controller";
 import {
   BGImages,
@@ -61,8 +62,16 @@ export const Carousel = () => {
   const onSliderImageClick = contextSafe(onSliderClick);
   const onSliderImageHover = contextSafe(onSliderHover);
 
+  const getSrBtnHandler = (isNext?: boolean) => () => {
+    updateCarousel(isNext ? "down" : "up", false);
+  };
+
   return (
     <Container id="carousel">
+      <Flex className="sr-only">
+        <button onClick={getSrBtnHandler(true)}>next</button>
+        <button onClick={getSrBtnHandler()}>previous</button>
+      </Flex>
       <BGImagesWrapper>
         <BGImages id="slider-bg__wrapper">
           {images.map(({ id, url }) => (

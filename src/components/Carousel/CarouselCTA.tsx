@@ -83,7 +83,7 @@ export const CarouselCTA = (props: Props) => {
   }, [currentIdx]);
 
   return (
-    <CTASection ref={wrapperRef} id="carousel__cta">
+    <CTASection ref={wrapperRef} id="carousel__cta" role="region" aria-live="polite" aria-label="Work details">
       <span id="carousel__cta-details">
         <P>{images[0].author}</P>
         <P>FOR {images[0].client}</P>
