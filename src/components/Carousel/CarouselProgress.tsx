@@ -4,7 +4,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { TextPlugin } from "gsap/all";
 import { useEffect, useRef, useState } from "react";
-import { theme } from "@/app/config/theme";
+import { theme } from "@/config/theme";
 import { useDebouncedWindowSize } from "@/lib/hooks/useDebouncedResize";
 import { Flex } from "../Flex";
 import { ProgressBarDot } from "../ProgressBar";
@@ -29,6 +29,7 @@ export const CarouselProgress = (props: Props) => {
   const [isAnimatingIn, setIsAnimatingIn] = useState(false);
   const windowSize = useDebouncedWindowSize();
 
+  // animate in
   useGSAP(() => {
     gsap.to(progressContainerRef.current, {
       delay: theme.animations.carousel.slideDuration,

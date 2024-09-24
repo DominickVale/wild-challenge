@@ -1,4 +1,4 @@
-import { theme } from "@/app/config/theme";
+import { theme } from "@/config/theme";
 import "styled-components";
 
 declare module "styled-components" {

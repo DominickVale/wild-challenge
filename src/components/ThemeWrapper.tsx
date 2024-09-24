@@ -1,7 +1,7 @@
 "use client";
 
 import { ThemeProvider } from "styled-components";
-import { theme } from "../app/config/theme";
+import { theme } from "../config/theme";
 import StyledComponentsRegistry from "../app/registry";
 
 type Props = {

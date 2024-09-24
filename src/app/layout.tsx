@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import { GlobalStyles } from "@/components/GlobalStyles";
 import { ThemeWrapper } from "@/components/ThemeWrapper";
 import { CursorProvider } from "@/components/Cursor";
 import { tungstenBold, tungstenSemiBold } from "./fonts";
 import "./globals.css";
-import { GlobalStyles } from "./page.styles";
 
 export const metadata: Metadata = {
   title: "XYZ PHOTOGRAPHY | Domenico Vale",

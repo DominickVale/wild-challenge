@@ -2,7 +2,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { CursorState } from "./Cursor";
 import { MutableRefObject, useCallback, useRef, useState } from "react";
-import { theme } from "@/app/config/theme";
+import { theme } from "@/config/theme";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 /*
@@ -79,7 +79,6 @@ export function useElasticCursorAnimation(
   const firstInteraction = useRef(true);
   const isTouch = useMediaQuery("(pointer:coarse)");
 
-  console.log("IS TOUCH", isTouch);
   useGSAP(() => {
     if ((truePos.current.x <= 1 && truePos.current.y <= 1) || isTouch) {
       return;

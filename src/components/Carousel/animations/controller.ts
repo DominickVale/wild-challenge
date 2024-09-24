@@ -1,14 +1,20 @@
-import { theme } from "@/app/config/theme";
+import { theme } from "@/config/theme";
 import { images, imgScaleDownFactor } from "@/lib/constants";
-import { isFirstOrLast } from "@/lib/utils/array";
-import { CarouselPositions, ScrollControllerCallbacks, ScrollDirection, useScrollController } from "./Carousel.hooks";
-import { useGSAP } from "@gsap/react";
-import { Size, Vec2 } from "@/types";
-import { Dispatch, MutableRefObject, SetStateAction, useEffect, useRef, useState } from "react";
-import gsap from "gsap";
 import { useDebouncedOnResize } from "@/lib/hooks/useDebouncedResize";
-import { getResponsiveImageSize } from "@/lib/utils/size";
-import { recalculateCarouselPositions } from "./Carousel.utils";
+import { isFirstOrLast } from "@/lib/utils/array";
+import { Size, Vec2 } from "@/types";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { CarouselPositions, ScrollControllerCallbacks, ScrollDirection, useScrollController } from "../Carousel.hooks";
+import {
+  getResponsiveImageSize,
+  getDraggedPos,
+  getNewMaskRecDimensions,
+  getScaledImageSize,
+  recalculateCarouselPositions,
+  updateImageDataCursor,
+} from "./utils";
 
 type Props = {
   canChange: boolean;
@@ -18,7 +24,8 @@ type Props = {
 
 /////////
 //
-// Main carousel animation (diagonal slide)
+// Main carousel animation logic (diagonal slide)
+//
 //
 export function useCarousel(props: Props) {
   const { canChange, setCanChange, onChange } = props;
@@ -34,27 +41,7 @@ export function useCarousel(props: Props) {
 
   // Setup ordered slides
   useGSAP(() => {
-    if (isFirstTime.current && positions.length > 0) {
-      const centerIndex = Math.floor(images.length / 2);
-
-      gsap.utils.toArray<HTMLElement>("#slider-images__wrapper > *").forEach((el, idx) => {
-        gsap.to(el, {
-          opacity: 1,
-          duration: theme.animations.intro.letterDuration,
-          ease: "power4.inOut"
-        })
-
-        let initialIdx = (idx - centerIndex + images.length - 1) % images.length;
-        el.setAttribute("data-idx", initialIdx.toString());
-        const img = el.querySelector("img");
-
-        // Position the element based on this initial index
-        const initialPosition = positions[initialIdx];
-        createSliderSetter(el, initialIdx, imageSize, initialPosition, origin);
-        setupParallax(img!);
-      });
-      isFirstTime.current = false;
-    }
+    setupOrderedSlides(isFirstTime, positions, origin, imageSize);
   }, [positions]);
 
   // Main carousel slide logic / animation
@@ -70,75 +57,13 @@ export function useCarousel(props: Props) {
     })
   );
 
-  const onCarouselDrag = contextSafe<ScrollControllerCallbacks["onDrag"]>((delta) => {
-    const { positions, origin } = carouselPositions;
-
-    gsap.utils.toArray<HTMLElement>("#slider-images__wrapper > *").forEach((el, idx) => {
-      const dir = delta > 0 ? "up" : "down";
-      const oldIdx = Number(el.getAttribute("data-idx"));
-      let newIdx = oldIdx || 0;
-
-      if (dir === "down") {
-        newIdx = (newIdx - 1 + images.length) % images.length;
-      } else {
-        newIdx = (newIdx + 1) % images.length;
-      }
-
-      const newPosition = positions[newIdx];
-      const maskRectangle = document.querySelector(`#carousel__title .carousel__svg-mask-rect:nth-of-type(${idx + 1})`);
-
-      const currPos = positions[oldIdx];
-      const bbox = el.getBoundingClientRect();
-      const dragPos = getDraggedPos(bbox, currPos, newPosition, delta!, origin, imageSize);
-
-      if (isFirstOrLast(oldIdx, images) && isFirstOrLast(newIdx, images)) {
-        gsap.set(el, {
-          left: newPosition.x,
-          top: newPosition.y,
-        });
-        gsap.set(maskRectangle as SVGRectElement, {
-          attr: {
-            x: newPosition.x - imageSize.width / imgScaleDownFactor / 2,
-            y: newPosition.y - imageSize.height / imgScaleDownFactor / 2,
-          },
-        });
-      } else {
-        gsap
-          .timeline()
-          .set(
-            el,
-            {
-              left: dragPos.x,
-              top: dragPos.y,
-              height: dragPos.newSize.height,
-              width: dragPos.newSize.width,
-              outline: "1px solid black",
-            },
-            "<"
-          )
-          .set(
-            maskRectangle as SVGRectElement,
-            {
-              attr: {
-                x: dragPos.x - dragPos.newSize.width / 2,
-                y: dragPos.y - dragPos.newSize.height / 2,
-              },
-              width: dragPos.newSize.width,
-              height: dragPos.newSize.height,
-              autoAlpha: 1,
-            },
-            "<"
-          );
-        return;
-      }
-    });
-  });
+  const onCarouselDrag = contextSafe<ScrollControllerCallbacks["onDrag"]>((delta) =>
+    dragSlider({ delta, carouselPositions, imageSize })
+  );
 
   const onCarouselDragEnd = contextSafe<ScrollControllerCallbacks["onDragEnd"]>((_, direction) => {
     onCarouselScroll(direction, true);
   });
-
-  //////////////////
 
   const scrollState = useScrollController(canChange, {
     onScroll: onCarouselScroll,
@@ -170,10 +95,12 @@ export function useCarousel(props: Props) {
   return { scrollState, imageSize, updateCarousel: onCarouselScroll };
 }
 
+//
+//
+//
+//
 ///////////
-//
-// Helpers / anims
-//
+
 type AnimateSliderProps = {
   wasDragging: boolean;
   canChange: boolean;
@@ -273,6 +200,106 @@ function animateSlider(props: AnimateSliderProps) {
   });
 }
 
+type DragSliderProps = {
+  delta: number;
+  carouselPositions: CarouselPositions;
+  imageSize: Size;
+};
+
+function dragSlider(props: DragSliderProps) {
+  const { carouselPositions, imageSize, delta } = props;
+  const { positions, origin } = carouselPositions;
+
+  gsap.utils.toArray<HTMLElement>("#slider-images__wrapper > *").forEach((el, idx) => {
+    const dir = delta > 0 ? "up" : "down";
+    const oldIdx = Number(el.getAttribute("data-idx"));
+    let newIdx = oldIdx || 0;
+
+    if (dir === "down") {
+      newIdx = (newIdx - 1 + images.length) % images.length;
+    } else {
+      newIdx = (newIdx + 1) % images.length;
+    }
+
+    const newPosition = positions[newIdx];
+    const maskRectangle = document.querySelector(`#carousel__title .carousel__svg-mask-rect:nth-of-type(${idx + 1})`);
+
+    const currPos = positions[oldIdx];
+    const bbox = el.getBoundingClientRect();
+    const dragPos = getDraggedPos(bbox, currPos, newPosition, delta!, origin, imageSize);
+
+    if (isFirstOrLast(oldIdx, images) && isFirstOrLast(newIdx, images)) {
+      gsap.set(el, {
+        left: newPosition.x,
+        top: newPosition.y,
+      });
+      gsap.set(maskRectangle as SVGRectElement, {
+        attr: {
+          x: newPosition.x - imageSize.width / imgScaleDownFactor / 2,
+          y: newPosition.y - imageSize.height / imgScaleDownFactor / 2,
+        },
+      });
+    } else {
+      gsap
+        .timeline()
+        .set(
+          el,
+          {
+            left: dragPos.x,
+            top: dragPos.y,
+            height: dragPos.newSize.height,
+            width: dragPos.newSize.width,
+            outline: "1px solid black",
+          },
+          "<"
+        )
+        .set(
+          maskRectangle as SVGRectElement,
+          {
+            attr: {
+              x: dragPos.x - dragPos.newSize.width / 2,
+              y: dragPos.y - dragPos.newSize.height / 2,
+            },
+            width: dragPos.newSize.width,
+            height: dragPos.newSize.height,
+            autoAlpha: 1,
+          },
+          "<"
+        );
+      return;
+    }
+  });
+}
+
+function setupOrderedSlides(
+  isFirstTime: React.MutableRefObject<boolean>,
+  positions: Vec2[],
+  origin: Vec2,
+  imageSize: Size
+) {
+  if (isFirstTime.current && positions.length > 0) {
+    const centerIndex = Math.floor(images.length / 2);
+
+    gsap.utils.toArray<HTMLElement>("#slider-images__wrapper > *").forEach((el, idx) => {
+      gsap.to(el, {
+        opacity: 1,
+        duration: theme.animations.intro.letterDuration,
+        ease: "power4.inOut",
+      });
+
+      let initialIdx = (idx - centerIndex + images.length - 1) % images.length;
+      el.setAttribute("data-idx", initialIdx.toString());
+      const img = el.querySelector("img");
+
+      // Position the element based on this initial index
+      const initialPosition = positions[initialIdx];
+      createSliderSetter(el, initialIdx, imageSize, initialPosition, origin);
+      setupParallax(img!);
+    });
+    isFirstTime.current = false;
+  }
+}
+
 // Sets both image and mask at he correct location
 function createSliderSetter(el: HTMLElement, idx: number, imageSize: Size, pos: Vec2, origin: Vec2) {
   const isCenter = pos.x === origin.x;
@@ -326,70 +353,4 @@ function createParallaxAnimation(el: HTMLElement, direction: ScrollDirection) {
       duration: baseDuration / 2,
       ease: "power3.out",
     });
-}
-
-function updateImageDataCursor(img: HTMLImageElement, pos: Vec2, origin: Vec2, isCenter: boolean) {
-  if (isCenter) {
-    img.removeAttribute("data-cursor-hover");
-    img.removeAttribute("data-cursor-text");
-  } else {
-    img.setAttribute("data-cursor-hover", "true");
-    img.setAttribute("data-cursor-text", pos.x > origin.x ? "NEXT" : "PREV");
-  }
-}
-
-function getScaledImageSize(imageSize: Size, isCenter: boolean) {
-  return {
-    width: isCenter ? imageSize.width : imageSize.width / imgScaleDownFactor,
-    height: isCenter ? imageSize.height : imageSize.height / imgScaleDownFactor,
-  };
-}
-
-function getNewMaskRecDimensions(pos: Vec2, imageSize: Size, scaledImageSize: Size, isCenter: boolean) {
-  return {
-    attr: {
-      x: pos.x - scaledImageSize.width / 2,
-      y: pos.y - scaledImageSize.height / 2,
-    },
-    autoAlpha: isCenter ? 1 : 0,
-    ...getScaledImageSize(imageSize, isCenter),
-  };
-}
-
-const CURVE = 3.5;
-function getDraggedPos(
-  bbox: DOMRect,
-  initialPos: Vec2,
-  targetPos: Vec2,
-  dragDelta: number,
-  origin: Vec2,
-  imageSize: Size
-) {
-  const maxDragDistance = document.documentElement.clientWidth / 2;
-
-  const progress = Math.max(Math.min(Math.abs(dragDelta) / maxDragDistance, 1), 0);
-
-  const x = initialPos.x + (targetPos.x - initialPos.x) * progress;
-  const y = initialPos.y + (targetPos.y - initialPos.y) * progress;
-
-  const scaledDownSize = {
-    width: imageSize.width / imgScaleDownFactor,
-    height: imageSize.height / imgScaleDownFactor,
-  };
-
-  const distanceFromCenter = Math.sqrt(Math.pow(x - origin.x, 2) + Math.pow(y - origin.y, 2));
-
-  const maxDistance = Math.sqrt(
-    Math.pow(document.documentElement.clientWidth / 2, 2) + Math.pow(document.documentElement.clientHeight / 2, 2)
-  );
-
-  const scaleFactor = Math.pow(1 - Math.min(distanceFromCenter / maxDistance, 1), CURVE);
-
-  const targetWidth = scaledDownSize.width + (imageSize.width - scaledDownSize.width) * scaleFactor;
-  const targetHeight = scaledDownSize.height + (imageSize.height - scaledDownSize.height) * scaleFactor;
-
-  const width = gsap.utils.interpolate(bbox.width, targetWidth, progress);
-  const height = gsap.utils.interpolate(bbox.height, targetHeight, progress);
-
-  return { x, y, newSize: { width, height } };
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { theme } from "@/app/config/theme";
+import { theme } from "@/config/theme";
 import { tungstenSemiBold } from "@/app/fonts";
 import { images, imgScaleDownFactor } from "@/lib/constants";
 import { useDebouncedWindowSize } from "@/lib/hooks/useDebouncedResize";
@@ -8,14 +8,14 @@ import { useIsClient } from "@/lib/hooks/useIsClient";
 import { Size } from "@/types";
 import { Text } from "@visx/text";
 import { useEffect, useRef, useState } from "react";
-import { CarouselTitleWrapper } from "./Carousel.styles";
+import { CarouselTitleWrapper } from "./CarouselTitle.styles";
 import { useTitleChangeAnimation } from "./CarouselTitle.animations";
 
-const width = 70;
-const height = "45.4%";
-const x = "50.28%";
-const lh = "0.85em";
-const ls = "0.052em";
+const WIDTH = 70;
+const HEIGHT = "45.4%";
+const X = "50.28%";
+const LH = "0.85em";
+const LS = "0.052em";
 
 type Props = {
   text: string;
@@ -54,7 +54,7 @@ const CarouselTitleInner = (props: Props) => {
   const wrapperRef = useRef(null);
   const isClient = useIsClient();
 
-  const [newText] = useTitleChangeAnimation(isClient, text, imageSize, { x, height }, wrapperRef);
+  const [newText] = useTitleChangeAnimation(isClient, text, imageSize, { x: X, height: HEIGHT }, wrapperRef);
 
   return (
     <CarouselTitleWrapper
@@ -68,10 +68,10 @@ const CarouselTitleInner = (props: Props) => {
         <clipPath id="textClip">
           <Text
             id="carousel__svg-text-clipPath"
-            x={x}
-            y={height}
+            x={X}
+            y={HEIGHT}
             textAnchor="middle"
-            lineHeight={lh}
+            lineHeight={LH}
             dominantBaseline="middle"
             fontSize={theme.fontSize.huge}
             className={tungstenSemiBold.className}
@@ -79,8 +79,8 @@ const CarouselTitleInner = (props: Props) => {
             stroke="black"
             strokeWidth="1"
             verticalAnchor="middle"
-            style={{ letterSpacing: ls, textTransform: "uppercase", transformOrigin: "center" }}
-            width={width}
+            style={{ letterSpacing: LS, textTransform: "uppercase", transformOrigin: "center" }}
+            width={WIDTH}
           >
             {isClient ? newText || images[0].title : ""}
           </Text>
@@ -104,19 +104,19 @@ const CarouselTitleInner = (props: Props) => {
 
       <Text
         id="carousel__svg-text"
-        x={x}
-        y={height}
+        x={X}
+        y={HEIGHT}
         textAnchor="middle"
         dominantBaseline="middle"
-        lineHeight={lh}
+        lineHeight={LH}
         verticalAnchor="middle"
         fontSize={theme.fontSize.huge}
         className={tungstenSemiBold.className}
-        style={{ letterSpacing: ls, textTransform: "uppercase", transformOrigin: "center" }}
+        style={{ letterSpacing: LS, textTransform: "uppercase", transformOrigin: "center" }}
         fill="none"
         stroke="white"
         strokeWidth="1"
-        width={width}
+        width={WIDTH}
       >
         {isClient ? newText || images[0].title : ""}
       </Text>

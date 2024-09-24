@@ -1,8 +1,7 @@
-"use client";
 import { Carousel } from "@/components/Carousel";
 import { Container } from "@/components/Container";
+import { Header } from "@/components/Header";
 import { NavLogo } from "@/components/NavLogo";
-import { Header } from "./page.styles";
 
 export default function Home() {
   return (

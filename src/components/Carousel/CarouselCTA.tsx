@@ -1,10 +1,10 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
-import { useRef, useState } from "react";
 import gsap from "gsap";
+import { useRef } from "react";
+import { theme } from "@/config/theme";
 import { images } from "@/lib/constants";
-import { theme } from "@/app/config/theme";
 import { useIsClient } from "@/lib/hooks/useIsClient";
 import { CTA, P } from "../Typography";
 import { CTASection } from "./Carousel.styles";
@@ -13,7 +13,6 @@ type Props = {
   currentIdx: number;
 };
 
-//@todo: fix text changing before animation
 export const CarouselCTA = (props: Props) => {
   const { currentIdx } = props;
   const wrapperRef = useRef(null);
@@ -52,15 +51,6 @@ export const CarouselCTA = (props: Props) => {
         },
         "<+20%"
       )
-      // .to(
-      //   "#carousel__cta-button",
-      //   {
-      //     autoAlpha: 0,
-      //     duration: durationIn,
-      //     ease,
-      //   },
-      //   "<"
-      // )
       .set("#carousel__cta-details > p:first-child", {
         text: state.author,
       })
@@ -90,15 +80,6 @@ export const CarouselCTA = (props: Props) => {
         },
         "<+30%"
       );
-    // .to(
-    //   "#carousel__cta-button",
-    //   {
-    //     autoAlpha: 1,
-    //     duration: durationIn,
-    //     ease,
-    //   },
-    //   "<30%"
-    // );
   }, [currentIdx]);
 
   return (

@@ -3,11 +3,10 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { images } from "@/lib/constants";
-import { theme } from "@/app/config/theme";
 import { useCursor } from "../Cursor";
-import { useCarousel } from "./Carousel.animations";
+import { useCarousel } from "./animations/controller";
 import {
   BGImages,
   BGImagesWrapper,
@@ -20,6 +19,8 @@ import {
 import { CarouselCTA } from "./CarouselCTA";
 import { CarouselProgress } from "./CarouselProgress";
 import { CarouselTitle } from "./CarouselTitle";
+import { onSliderClick, onSliderHover } from "./animations/interactions";
+import { changeCarouselBgImage } from "./animations/background";
 
 gsap.registerPlugin(useGSAP);
 
@@ -46,86 +47,26 @@ export const Carousel = () => {
     },
   });
 
-  // Background (blurred) images animations
   useGSAP(() => {
-    if (activeImageIdx >= 0) {
-      const tl = gsap
-        .timeline()
-        .to("#slider-bg__wrapper > *", {
-          opacity: 0,
-          duration: theme.animations.carousel.backgroundDuration,
-          ease: "power4.inOut",
-        })
-        .to(
-          `#slider-bg__wrapper > *:nth-child(${activeImageIdx + 1})`,
-          {
-            opacity: 1,
-            duration: theme.animations.carousel.backgroundDuration,
-            ease: "power4.inOut",
-          },
-          "<"
-        );
-    }
-  }, [activeImageIdx]);
-
-  useEffect(() => {
     const title = images[activeImageIdx]?.title;
     if (title) {
       setText(title);
     }
+
+    changeCarouselBgImage(activeImageIdx);
   }, [activeImageIdx]);
 
-  function onSliderImageClick(e: React.MouseEvent<HTMLDivElement>) {
-    const idx = Number(e.currentTarget.getAttribute("data-idx")) || 0;
-    const middleIdx = Math.floor(images.length / 2);
-    gsap
-      .timeline()
-      .to(e.currentTarget, {
-        scale: 0.98,
-        duration: 0.05,
-        ease: "power4.out",
-      })
-      .to(e.currentTarget, {
-        scale: 1,
-        duration: 0.15,
-        ease: "power4.in",
-      });
-    if (idx < middleIdx) {
-      updateCarousel("up", false);
-    } else if (idx > middleIdx) {
-      updateCarousel("down", false);
-    }
-  }
+  const { contextSafe } = useGSAP();
 
-  function onImageHover(target: HTMLElement, isHovering: boolean) {
-    // avoid center image
-    if (Number(target.getAttribute("data-idx")) === Math.floor(images.length / 2)) {
-      return;
-    }
-    gsap
-      .timeline()
-      .to(target, {
-        scale: isHovering ? 1.05 : 1,
-        duration: 0.8,
-        ease: "power4.out",
-      })
-      .to(
-        target,
-        {
-          duration: 0.15,
-          outline: isHovering ? "1px solid white" : "1px solid black",
-          ease: "power4.inOut",
-        },
-        "<"
-      );
-  }
+  const onSliderImageClick = contextSafe(onSliderClick);
+  const onSliderImageHover = contextSafe(onSliderHover);
 
   return (
     <Container id="carousel">
       <BGImagesWrapper>
         <BGImages id="slider-bg__wrapper">
           {images.map(({ id, url }) => (
-            <BlurredImage key={id} src={url} data-img-id={id} fill alt="Background image" />
+            <BlurredImage key={id} src={url} data-img-id={id} fill alt="" />
           ))}
         </BGImages>
         <SliderImagesWrapper id="slider-images__wrapper">
@@ -135,9 +76,9 @@ export const Carousel = () => {
               data-idx={idx}
               data-img-id={id}
               $isCenter={idx === 0}
-              onClick={onSliderImageClick}
-              onMouseEnter={(e) => onImageHover(e.currentTarget as HTMLElement, true)}
-              onMouseLeave={(e) => onImageHover(e.currentTarget as HTMLElement, false)}
+              onClick={(e) => onSliderImageClick(e, updateCarousel)}
+              onMouseEnter={(e) => onSliderImageHover(e.currentTarget as HTMLElement, true)}
+              onMouseLeave={(e) => onSliderImageHover(e.currentTarget as HTMLElement, false)}
             >
               <Image src={url} fill objectFit="cover" alt={alt} />
             </SliderImage>

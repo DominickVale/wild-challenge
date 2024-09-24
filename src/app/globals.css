@@ -51,7 +51,7 @@ body {
   width: 100%;
   position: fixed;
   /* prevent overscroll bounce*/
-  background-color: lightgreen;
+  background-color: grey;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   /* iOS velocity scrolling */

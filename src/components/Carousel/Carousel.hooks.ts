@@ -1,6 +1,6 @@
 import { Vec2 } from "@/types";
 import { useDebounceFn } from "ahooks";
-import { MutableRefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type CarouselPositions = {
   positions: Vec2[];
@@ -40,13 +40,11 @@ export function useScrollController(canChange: boolean, cbs: ScrollControllerCal
   const animationRef = useRef<number | null>(null);
 
   const debounceHandleScroll = useDebounceFn(
-    (e: WheelEvent | TouchEvent) => {
+    (e: WheelEvent) => {
       let direction: "up" | "down" = "up";
       let newIdx: number;
 
-      if (e instanceof WheelEvent) {
-        direction = e.deltaY > 0 ? "down" : "up";
-      }
+      direction = e.deltaY > 0 ? "down" : "up";
       onScroll(direction, false);
       setState((prevState) => ({ ...prevState, currIdx: newIdx, lastDirection: direction }));
     },
@@ -72,7 +70,7 @@ export function useScrollController(canChange: boolean, cbs: ScrollControllerCal
   }
 
   function onPointerDown(e: TouchEvent) {
-    if(!canChange) return
+    if (!canChange) return;
     isDragging.current = true;
     dragStartX.current = e.touches[0].pageX;
     animationRef.current = requestAnimationFrame(animation);
