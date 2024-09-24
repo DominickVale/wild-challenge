@@ -57,7 +57,7 @@ export function useScrollController(canChange: boolean, cbs: ScrollControllerCal
     const movedBy = deltaX.current;
     deltaX.current = 0;
     dragStartX.current = 0;
-    if (Math.abs(movedBy) > 5) {
+    if (Math.abs(movedBy) > 1) {
       onDragEnd(movedBy, movedBy > 0 ? "up" : "down");
     }
   }
