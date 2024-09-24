@@ -5,7 +5,7 @@ export const images = [
   {
     id: "image01",
     url: "/images/image01.jpg",
-    alt: "background picture",
+    alt: "A black and white image of the upper back of a muscular person.",
     title: "everyday flowers",
     author: "johanna hobel",
     date: "jun 2019",
@@ -14,7 +14,7 @@ export const images = [
   {
     id: "image02",
     url: "/images/image02.jpg",
-    alt: "background picture",
+    alt: "A stylistic picture of a woman looking slightly down at the camera.",
     title: "the wilder night",
     author: "johanna hobel",
     date: "dec 2019",
@@ -23,7 +23,7 @@ export const images = [
   {
     id: "image03",
     url: "/images/image03.jpg",
-    alt: "background picture",
+    alt: "A picture of an Alpaca.",
     title: "smooth memories",
     author: "johanna hobel",
     date: "feb 2020",
@@ -32,7 +32,7 @@ export const images = [
   {
     id: "image04",
     url: "/images/image04.jpg",
-    alt: "background picture",
+    alt: "An abstract picture featuring warm colors on the right and cold colors on the left.",
     title: "the future universe",
     author: "johanna hobel",
     client: "on",
@@ -41,7 +41,7 @@ export const images = [
   {
     id: "image05",
     url: "/images/image05.jpg",
-    alt: "background picture",
+    alt: "A black and white picture of the silhouette of a pregnant woman behind veils.",
     title: "she was born urban",
     author: "johanna hobel",
     client: "si",
