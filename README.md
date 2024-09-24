@@ -7,9 +7,3 @@ pnpm dev
 # or
 bun dev
 ```
-
-## Example .env
-
-```
-NEXT_PUBLIC_PRODUCTION=<true | false>
-```
