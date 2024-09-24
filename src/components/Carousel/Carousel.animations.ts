@@ -38,6 +38,12 @@ export function useCarousel(props: Props) {
       const centerIndex = Math.floor(images.length / 2);
 
       gsap.utils.toArray<HTMLElement>("#slider-images__wrapper > *").forEach((el, idx) => {
+        gsap.to(el, {
+          opacity: 1,
+          duration: theme.animations.intro.letterDuration,
+          ease: "power4.inOut"
+        })
+
         let initialIdx = (idx - centerIndex + images.length - 1) % images.length;
         el.setAttribute("data-idx", initialIdx.toString());
         const img = el.querySelector("img");

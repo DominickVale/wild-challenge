@@ -120,16 +120,6 @@ export const Carousel = () => {
       );
   }
 
-  // useGSAP(() => {
-  //   gsap.utils.toArray("#slider-images__wrapper > *").forEach((el) => {
-  //     gsap.to(el as HTMLElement, {
-  //       scale: 1,
-  //       duration: 1,
-  //       ease: "power4.inOut",
-  //     });
-  //   });
-  // }, []);
-
   return (
     <Container id="carousel">
       <BGImagesWrapper>

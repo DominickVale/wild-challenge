@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 import styled from "styled-components";
-import { HeroType } from "../Typography";
 
 export const TitleSection = styled.main`
   display: flex;
@@ -70,6 +69,7 @@ type SliderImageProps = {
   $isCenter?: boolean;
 };
 export const SliderImage = styled.div<SliderImageProps>`
+  opacity: 0;
   position: fixed;
   left: 50vw;
   top: 50vh;
@@ -103,12 +103,6 @@ export const SliderImagesWrapper = styled.div`
 export const Container = styled.div`
   height: 100%;
   width: 100%;
-`;
-
-export const CarouselTitleText = styled(HeroType)`
-  z-index: 10;
-  color: transparent;
-  -webkit-text-stroke: 2px ${(p) => p.theme.colors.typeLight};
 `;
 
 export const CarouselTitleWrapper = styled.svg`

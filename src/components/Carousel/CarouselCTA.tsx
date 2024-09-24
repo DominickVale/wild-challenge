@@ -74,7 +74,7 @@ export const CarouselCTA = (props: Props) => {
         x: "0",
         // we need the CTA to attract the viewer's eye and not compete with the other anims
         // but the animation still needs to fit in the overall carousel slide tl
-        delay: 0.5,
+        delay: 1,
         autoAlpha: 1,
         duration: durationIn,
         ease,

@@ -9,9 +9,7 @@ export default function Home() {
     <Container>
       <Header>
         <nav>
-          <NavLogo href="/" data-cursor-hover>
-            XYZ PHOTOGRAPHY
-          </NavLogo>
+          <NavLogo data-cursor-hover />
         </nav>
       </Header>
       <Carousel />
