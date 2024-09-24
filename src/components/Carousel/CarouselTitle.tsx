@@ -84,7 +84,7 @@ const CarouselTitleInner = (props: Props) => {
               className={tungstenSemiBold.className}
               fill="black"
               stroke="black"
-              strokeWidth="1"
+              strokeWidth="1.2"
               verticalAnchor="middle"
               style={{ letterSpacing: LS, textTransform: "uppercase", transformOrigin: "center" }}
               width={WIDTH}
@@ -122,7 +122,7 @@ const CarouselTitleInner = (props: Props) => {
           style={{ letterSpacing: LS, textTransform: "uppercase", transformOrigin: "center" }}
           fill="none"
           stroke="white"
-          strokeWidth="1"
+          strokeWidth="1.2"
           width={WIDTH}
         >
           {textToRender}
