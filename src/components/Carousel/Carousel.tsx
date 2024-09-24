@@ -91,9 +91,9 @@ export const Carousel = () => {
         ease: "power4.in",
       });
     if (idx < middleIdx) {
-      updateCarousel(activeImageIdx - 1, "up");
+      updateCarousel("up", false);
     } else if (idx > middleIdx) {
-      updateCarousel(activeImageIdx + 1, "down");
+      updateCarousel("down", false);
     }
   }
 
@@ -120,15 +120,15 @@ export const Carousel = () => {
       );
   }
 
-  useGSAP(() => {
-    gsap.utils.toArray("#slider-images__wrapper > *").forEach((el) => {
-      gsap.to(el as HTMLElement, {
-        scale: 1,
-        duration: 1,
-        ease: "power4.inOut",
-      });
-    });
-  }, []);
+  // useGSAP(() => {
+  //   gsap.utils.toArray("#slider-images__wrapper > *").forEach((el) => {
+  //     gsap.to(el as HTMLElement, {
+  //       scale: 1,
+  //       duration: 1,
+  //       ease: "power4.inOut",
+  //     });
+  //   });
+  // }, []);
 
   return (
     <Container id="carousel">

@@ -73,10 +73,10 @@ export const SliderImage = styled.div<SliderImageProps>`
   position: fixed;
   left: 50vw;
   top: 50vh;
-  transform: translate(-50%, -50%) scale(0.5);
+  transform: translate(-50%, -50%);
   transform-origin: center;
-  width: 512px;
-  height: 680px;
+  width: 32vw;
+  height: 42.4vw;
   cursor: pointer;
   overflow: hidden;
   border-radius: 10px;
