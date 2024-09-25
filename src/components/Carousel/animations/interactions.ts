@@ -29,7 +29,7 @@ export function onSliderClick(
 
 export function onSliderHover(target: HTMLElement, isHovering: boolean) {
   // avoid center image
-  if (Number(target.getAttribute("data-idx")) === Math.floor(images.length / 2)) {
+  if (images.length < 1 || Number(target.getAttribute("data-idx")) === Math.floor(images.length / 2)) {
     return;
   }
   gsap
