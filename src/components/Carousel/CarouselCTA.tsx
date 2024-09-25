@@ -6,8 +6,8 @@ import { useRef } from "react";
 import { theme } from "@/config/theme";
 import { images } from "@/lib/constants";
 import { useIsClient } from "@/lib/hooks/useIsClient";
-import { CTA, P } from "../Typography";
-import { CTASection } from "./Carousel.styles";
+import { P } from "../Typography";
+import { CTASection, CTA } from "./CarouselCTA.styles";
 
 type Props = {
   currentIdx: number;

@@ -11,7 +11,7 @@ export const HeroType = styled.h1`
   color: ${(p) => p.theme.typeLight};
 `;
 
-const p = css`
+export const pMixin = css`
   font-family: Arial, Helvetica, sans-serif;
   font-style: normal;
   font-weight: 400;
@@ -23,19 +23,5 @@ const p = css`
 `;
 
 export const P = styled.p`
-  ${p};
-`;
-
-export const CTA = styled.a`
-  ${p}
-  font-weight: bold;
-  background-color: ${(p) => p.theme.colors.typeLight};
-  color: ${(p) => p.theme.colors.typeDark};
-  border-radius: 1.5rem;
-  padding: 0.563rem 1rem 0.625rem 1rem;
-  transition: all 0.3s ease-in-out;
-  &:hover {
-    background-color: ${(p) => p.theme.colors.typeDark};
-    color: ${(p) => p.theme.colors.typeLight};
-  }
+  ${pMixin};
 `;

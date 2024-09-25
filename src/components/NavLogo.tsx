@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import styled from "styled-components";
 import gsap from "gsap";
@@ -36,10 +34,17 @@ const StyledNavLogo = styled(Link)`
     & > .letter:nth-child(3) {
       transform: scale(0);
     }
+    & > :last-child {
+      margin-left: 1ch;
+      opacity: 0;
+    }
   }
 `;
 
-export function NavLogo() {
+type NavLogoProps = {
+  onIntroEnd: () => void;
+};
+export function NavLogo({ onIntroEnd }: NavLogoProps) {
   const { letterDuration } = theme.animations.intro;
   useGSAP(() => {
     gsap
@@ -48,25 +53,31 @@ export function NavLogo() {
         translateX: 0,
         opacity: 1,
         duration: letterDuration,
-        ease: "power4.inOut",
+        ease: "power4.in",
       })
       .to("#nav__logo .letter:nth-child(2)", {
         translateY: 0,
         opacity: 1,
         duration: letterDuration,
-        ease: "power4.inOut",
+        ease: "power4.in",
       })
       .to("#nav__logo .letter:nth-child(3)", {
         scale: 1,
         opacity: 1,
         duration: letterDuration,
+        ease: "power4.in",
+      })
+      .to("#nav__logo span:last-child", {
+        autoAlpha: 1,
+        duration: letterDuration * 3,
         ease: "power4.inOut",
       })
-      .to("#nav__logo", {
-        delay: letterDuration * 2,
+      .to("#nav__logo span", {
+        delay: letterDuration,
         autoAlpha: 0,
         duration: 1,
         ease: "power4.inOut",
+        onComplete: onIntroEnd,
       })
       .set("#nav__logo", {
         left: theme.padding,
@@ -75,7 +86,7 @@ export function NavLogo() {
         ease: "power4.out",
         fontSize: theme.fontSize.default,
       })
-      .to("#nav__logo", {
+      .to("#nav__logo span", {
         autoAlpha: 1,
         duration: 1,
         ease: "power4.in",
@@ -85,10 +96,17 @@ export function NavLogo() {
   return (
     <StyledNavLogo href="/">
       <span className="sr-only">XYZ Photography</span>
-      <span id="nav__logo" className="logo" data-cursor-hover>
-        <span className="letter">X</span>
-        <span className="letter">Y</span>
-        <span className="letter">Z</span> PHOTOGRAPHY
+      <span id="nav__logo" className="logo">
+        <span className="letter" data-cursor-hover>
+          X
+        </span>
+        <span className="letter" data-cursor-hover>
+          Y
+        </span>
+        <span className="letter" data-cursor-hover>
+          Z
+        </span>
+        <span data-cursor-hover>PHOTOGRAPHY</span>
       </span>
     </StyledNavLogo>
   );

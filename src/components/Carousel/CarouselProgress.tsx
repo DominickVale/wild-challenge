@@ -87,7 +87,7 @@ export const CarouselProgress = (props: Props) => {
 
   return (
     <ProgressContainer ref={progressContainerRef}>
-      <Flex direction="row" gap="1.5rem" align="center">
+      <Flex direction="row" $gap="1.5rem" $align="center">
         <ProgressCounterText id="carousel__counter">
           <span>
             <span />
@@ -95,7 +95,7 @@ export const CarouselProgress = (props: Props) => {
           </span>
           of {state.total}
         </ProgressCounterText>
-        <Flex direction="row" gap="0.5rem" align="flex-end">
+        <Flex direction="row" $gap="0.5rem" $align="flex-end">
           {Array(state.total)
             .fill(null)
             .map((_, idx) => (

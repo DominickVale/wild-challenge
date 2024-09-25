@@ -23,7 +23,7 @@ export type ScrollControllerCallbacks = {
   onDragEnd: (totalDelta: number, direction: ScrollDirection) => void;
 };
 
-export function useScrollController(canChange: boolean, cbs: ScrollControllerCallbacks): ScrollControllerState {
+export function useScrollController(enabled: boolean, canChange: boolean, cbs: ScrollControllerCallbacks): ScrollControllerState {
   const { onScroll, onDrag, onDragEnd } = cbs;
   const [state, setState] = useState<{
     lastTouchY: number;
@@ -41,6 +41,7 @@ export function useScrollController(canChange: boolean, cbs: ScrollControllerCal
 
   const debounceHandleScroll = useDebounceFn(
     (e: WheelEvent) => {
+      if(!enabled) return;
       let direction: "up" | "down" = "up";
       let newIdx: number;
 
@@ -70,7 +71,7 @@ export function useScrollController(canChange: boolean, cbs: ScrollControllerCal
   }
 
   function onPointerDown(e: TouchEvent) {
-    if (!canChange) return;
+    if (!canChange || !enabled) return;
     isDragging.current = true;
     dragStartX.current = e.touches[0].pageX;
     animationRef.current = requestAnimationFrame(animation);

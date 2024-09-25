@@ -1,7 +1,7 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { CursorState } from "./Cursor";
-import { MutableRefObject, useCallback, useRef, useState } from "react";
+import { MutableRefObject, useRef, useState } from "react";
 import { theme } from "@/config/theme";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 

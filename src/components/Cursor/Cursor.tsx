@@ -22,7 +22,7 @@ export type CursorRef = {
   setState: (newState: Partial<CursorState>) => void;
 };
 
-export const Cursor = forwardRef<CursorRef, Props>((props, ref) => {
+export const Cursor = forwardRef<CursorRef, Props>((_, ref) => {
   const progressRef = useRef<SVGCircleElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const innerCursorRef = useRef<HTMLDivElement>(null);

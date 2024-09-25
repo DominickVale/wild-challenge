@@ -18,7 +18,7 @@ const LH = "0.85em";
 const LS = "0.052em";
 
 type Props = {
-  text: string;
+  text: string | null;
   imageSize: Size;
 };
 

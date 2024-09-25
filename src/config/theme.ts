@@ -13,7 +13,7 @@ const theme = {
   },
   animations: {
     intro: {
-      letterDuration: 0.25,
+      letterDuration: 0.35,
     },
     carousel: {
       slideDuration: 1.5,

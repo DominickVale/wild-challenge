@@ -3,24 +3,24 @@ import { Size, Vec2 } from "@/types";
 import { CarouselPositions } from "../Carousel.hooks";
 import gsap from 'gsap'
 
-const padding = 16 * 2;
-const designImgSize = {
+const DESIGN_PADDING = 16 * 2;
+const DESIGN_IMG_SIZE = {
   width: 512,
   height: 680,
 };
-const designViewportSize = {
-  width: 1600 - padding,
-  height: 900 - padding,
+const DESIGN_VIEWPORT_SIZE = {
+  width: 1600 - DESIGN_PADDING,
+  height: 900 - DESIGN_PADDING,
 };
 
 export function getResponsiveImageSize() {
   const vw = document.documentElement.clientWidth;
   const vh = document.documentElement.clientHeight;
-  const vwFactor = designViewportSize.width / designImgSize.width;
-  const vhFactor = designViewportSize.height / designImgSize.height;
+  const vwFactor = DESIGN_VIEWPORT_SIZE.width / DESIGN_IMG_SIZE.width;
+  const vhFactor = DESIGN_VIEWPORT_SIZE.height / DESIGN_IMG_SIZE.height;
 
-  const availableWidth = vw - padding;
-  const availableHeight = vh - padding;
+  const availableWidth = vw - DESIGN_PADDING;
+  const availableHeight = vh - DESIGN_PADDING;
 
   const widthBasedOnVW = availableWidth / vwFactor;
   const widthBasedOnVH = availableHeight / vhFactor / imgRatio;

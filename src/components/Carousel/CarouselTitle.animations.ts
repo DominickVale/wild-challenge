@@ -6,7 +6,7 @@ import { MutableRefObject, useState } from "react";
 
 export function useTitleChangeAnimation(
   isClient: boolean,
-  text: string,
+  text: string | null,
   imageSize: Size,
   initialDimensions: { x: string; height: string },
   wrapperRef: MutableRefObject<SVGSVGElement | null>
@@ -37,7 +37,7 @@ export function useTitleChangeAnimation(
 
 type DisappearProps = {
   isClient: boolean;
-  text: string;
+  text: string | null;
   wrapperRef: MutableRefObject<SVGSVGElement | null>;
   setNewText: React.Dispatch<React.SetStateAction<string>>;
   newText: string;
@@ -45,7 +45,7 @@ type DisappearProps = {
 
 function disappear(props: DisappearProps) {
   const { isClient, text, wrapperRef, newText, setNewText } = props;
-  if (!isClient || newText === text) return;
+  if (!isClient || newText === text || !text) return;
   const durationOut = theme.animations.carousel.slideDuration / 4;
   const ease = "power4.inOut";
   const textId = "#carousel__svg-text-clipPath";

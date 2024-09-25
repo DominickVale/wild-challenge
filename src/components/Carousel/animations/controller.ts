@@ -18,6 +18,7 @@ import {
 
 type Props = {
   canChange: boolean;
+  enabled: boolean;
   setCanChange: Dispatch<SetStateAction<boolean>>;
   onChange(imgId: string, direction: ScrollDirection): void;
 };
@@ -28,7 +29,7 @@ type Props = {
 //
 //
 export function useCarousel(props: Props) {
-  const { canChange, setCanChange, onChange } = props;
+  const { canChange, setCanChange, onChange, enabled } = props;
   const [imageSize, setImageSize] = useState<Size>({ width: 0, height: 0 });
   const isFirstTime = useRef(true);
   const [carouselPositions, setCarouselPositions] = useState<CarouselPositions>({
@@ -41,8 +42,10 @@ export function useCarousel(props: Props) {
 
   // Setup ordered slides
   useGSAP(() => {
-    setupOrderedSlides(isFirstTime, positions, origin, imageSize);
-  }, [positions]);
+    if (enabled && positions.length > 0) {
+      setupOrderedSlides(isFirstTime, positions, origin, imageSize);
+    }
+  }, [positions, enabled]);
 
   // Main carousel slide logic / animation
   const onCarouselScroll = contextSafe<ScrollControllerCallbacks["onScroll"]>((direction, wasDragging) =>
@@ -65,7 +68,7 @@ export function useCarousel(props: Props) {
     onCarouselScroll(direction, true);
   });
 
-  const scrollState = useScrollController(canChange, {
+  const scrollState = useScrollController(enabled, canChange, {
     onScroll: onCarouselScroll,
     onDrag: onCarouselDrag,
     onDragEnd: onCarouselDragEnd,
@@ -73,7 +76,7 @@ export function useCarousel(props: Props) {
 
   // Fix layout on window resize
   const onResizeFix = contextSafe(() => {
-    if (carouselPositions.positions.length < 5) return;
+    if (carouselPositions.positions.length < 5 || !enabled) return;
     gsap.utils.toArray<HTMLElement>("#slider-images__wrapper > *").forEach((el) => {
       const idx = Number(el.getAttribute("data-idx"));
       const pos = positions[idx];

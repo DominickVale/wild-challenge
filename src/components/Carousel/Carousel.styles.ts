@@ -12,28 +12,6 @@ export const TitleSection = styled.main`
   z-index: 10;
 `;
 
-export const CTASection = styled.section`
-  position: absolute;
-  opacity: 0;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1rem;
-
-  position: absolute;
-  right: 9.7%;
-  bottom: 10.3%;
-
-  #carousel__cta-details > p:nth-child(2) {
-    align-self: flex-end;
-  }
-  @media screen and (max-width: 768px) {
-    right: ${(p) => p.theme.padding};
-    bottom: 6%;
-  }
-`;
-
 export const BGImagesWrapper = styled.div`
   position: fixed;
   left: 0;

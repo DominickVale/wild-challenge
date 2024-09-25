@@ -3,7 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { images } from "@/lib/constants";
 import { useCursor } from "../Cursor";
 import { Flex } from "../Flex";
@@ -25,14 +25,18 @@ import { changeCarouselBgImage } from "./animations/background";
 
 gsap.registerPlugin(useGSAP);
 
-export const Carousel = () => {
+type CarouselProps = {
+  enabled: boolean;
+};
+export const Carousel = ({ enabled }: CarouselProps) => {
   const cursor = useCursor();
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
 
   const [canChange, setCanChange] = useState(true);
-  const [text, setText] = useState(images[activeImageIdx].title);
+  const [text, setText] = useState<string | null>(null);
 
   const { scrollState, imageSize, updateCarousel } = useCarousel({
+    enabled,
     canChange,
     setCanChange,
     onChange: (imgId, direction) => {
@@ -49,13 +53,14 @@ export const Carousel = () => {
   });
 
   useGSAP(() => {
-    const title = images[activeImageIdx]?.title;
-    if (title) {
-      setText(title);
-    }
-
     changeCarouselBgImage(activeImageIdx);
   }, [activeImageIdx]);
+
+  useEffect(() => {
+    if (enabled) {
+      setText(images[activeImageIdx].title);
+    }
+  }, [enabled, activeImageIdx]);
 
   const { contextSafe } = useGSAP();
 
@@ -86,19 +91,30 @@ export const Carousel = () => {
               data-img-id={id}
               $isCenter={idx === 0}
               onClick={(e) => onSliderImageClick(e, updateCarousel)}
-              onMouseEnter={(e) => onSliderImageHover(e.currentTarget as HTMLElement, true)}
-              onMouseLeave={(e) => onSliderImageHover(e.currentTarget as HTMLElement, false)}
+              onMouseEnter={(e) => onSliderImageHover(e.currentTarget as HTMLElement, true, enabled)}
+              onMouseLeave={(e) => onSliderImageHover(e.currentTarget as HTMLElement, false, enabled)}
             >
-              <Image src={url} fill objectFit="cover" alt={alt} />
+              <Image
+                src={url}
+                fill
+                style={{ objectFit: "cover" }}
+                alt={alt}
+                quality={100}
+                sizes="(max-width: 768px) 50vw, (max-width: 1600px) 32vw, 35vw"
+              />
             </SliderImage>
           ))}
         </SliderImagesWrapper>
       </BGImagesWrapper>
-      <TitleSection>
-        <CarouselTitle text={text} imageSize={imageSize} />
-        <CarouselProgress state={{ current: activeImageIdx, total: images.length, direction: scrollState.direction }} />
-        <CarouselCTA currentIdx={activeImageIdx} />
-      </TitleSection>
+      {enabled && (
+        <TitleSection>
+          <CarouselTitle text={text} imageSize={imageSize} />
+          <CarouselProgress
+            state={{ current: activeImageIdx, total: images.length, direction: scrollState.direction }}
+          />
+          <CarouselCTA currentIdx={activeImageIdx} />
+        </TitleSection>
+      )}
     </Container>
   );
 };
