@@ -85,7 +85,7 @@ export function NavLogo() {
   return (
     <StyledNavLogo href="/">
       <span className="sr-only">XYZ Photography</span>
-      <span id="nav__logo" className="logo">
+      <span id="nav__logo" className="logo" data-cursor-hover>
         <span className="letter">X</span>
         <span className="letter">Y</span>
         <span className="letter">Z</span> PHOTOGRAPHY

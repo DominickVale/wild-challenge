@@ -8,7 +8,7 @@ export default function Home() {
     <Container>
       <Header>
         <nav>
-          <NavLogo data-cursor-hover />
+          <NavLogo />
         </nav>
       </Header>
       <Carousel />
