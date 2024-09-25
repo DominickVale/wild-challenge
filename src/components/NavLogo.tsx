@@ -64,12 +64,21 @@ export function NavLogo() {
       })
       .to("#nav__logo", {
         delay: letterDuration * 2,
+        autoAlpha: 0,
+        duration: 1,
+        ease: "power4.inOut",
+      })
+      .set("#nav__logo", {
         left: theme.padding,
         top: theme.padding,
         transform: "none",
-        duration: 1,
-        ease: "power4.inOut",
+        ease: "power4.out",
         fontSize: theme.fontSize.default,
+      })
+      .to("#nav__logo", {
+        autoAlpha: 1,
+        duration: 1,
+        ease: "power4.in",
       });
   }, []);
 
